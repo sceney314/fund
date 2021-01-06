@@ -1,0 +1,2 @@
+providerFilter=com.fund.www.provider.filter.ProviderFilter
+traceFilter=com.fund.www.provider.filter.TraceFilter

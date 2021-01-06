@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Properties>
+        <Property name="LOG_HOME">/data/logs/fund</Property>
+        <Property name="PATTERN_STYLE">
+<!--            time[%d{yyyy-MM-dd HH:mm:ss.SSS}] traceid[%X{jdb_traceid}] uri[%X{mdc_uri}] thread[%t] level[%p] class[%c] appname[%appname] %msg%n-->
+            time[%d{yyyy-MM-dd HH:mm:ss.SSS}] thread[%t] %msg%n
+        </Property>
+    </Properties>
+
+    <Appenders>
+        <Console name="CONSOLE" target="SYSTEM_OUT">
+            <PatternLayout charset="UTF-8" pattern="${PATTERN_STYLE}"/>
+        </Console>
+    </Appenders>
+
+    <Loggers>
+        <Logger name="org.springframework" level="DEBUG"/>
+        <Logger name="java.sql.Connection" level="DEBUG"/>
+        <Logger name="com.alibaba.dubbo" level="DEBUG"/>
+        <Logger name="org.apache" level="DEBUG"/>
+
+        <Root level="DEBUG">
+            <AppenderRef ref="CONSOLE"/>
+        </Root>
+    </Loggers>
+</Configuration>
