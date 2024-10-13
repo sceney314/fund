@@ -153,7 +153,6 @@ public class Initiator implements ApplicationListener<ApplicationEvent>, Applica
          */
         if (event instanceof ContextRefreshedEvent) {
             init(applicationContext);
-
             // Spring2.5新增的事件，当容器调用ConfigurableApplicationContext的Stop()方法停止容器时触发该事件
         } else if (event instanceof ContextStoppedEvent) {
             destroy();

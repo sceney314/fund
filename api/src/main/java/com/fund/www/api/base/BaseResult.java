@@ -12,8 +12,8 @@ import com.fund.www.api.common.Codes;
 public class BaseResult {
 
     // 返回成功方法
-    public static Result success(){
-        return new SuccessResult();
+    public static Result<?> success(){
+        return new SuccessResult<>();
     }
 
     public static <T> Result<T> success(T data){

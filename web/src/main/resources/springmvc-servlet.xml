@@ -56,6 +56,7 @@
                         <!--这里顺序不能反，一定要先写text/html，不然IE下会出现下载提示-->
                         <value>text/html;charset=UTF-8</value>
                         <value>application/json;charset=UTF-8</value>
+                        <value>application/x-www-form-urlencoded;charset=UTF-8</value>
                     </list>
                 </property>
             </bean>
@@ -70,15 +71,15 @@
     </bean>
 
     <!--拦截器-->
-    <mvc:interceptors>
-    <!--controller拦截器-->
-        <mvc:interceptor>
-            <mvc:mapping path="/api/**"/>
-            <mvc:exclude-mapping path="/api/opuse/*"/>
-            <mvc:exclude-mapping path="/api/flush/*"/>
-            <bean class="www.plg.dhconf.provider.interceptor.UserInterceptor"/>
-        </mvc:interceptor>
-    </mvc:interceptors>
+<!--    <mvc:interceptors>-->
+<!--    &lt;!&ndash;controller拦截器&ndash;&gt;-->
+<!--        <mvc:interceptor>-->
+<!--            <mvc:mapping path="/api/**"/>-->
+<!--            <mvc:exclude-mapping path="/api/opuse/*"/>-->
+<!--            <mvc:exclude-mapping path="/api/flush/*"/>-->
+<!--            <bean class="www.plg.dhconf.provider.interceptor.UserInterceptor"/>-->
+<!--        </mvc:interceptor>-->
+<!--    </mvc:interceptors>-->
 
     <!--<bean id="exceptionInterceptor" class="www.plg.base.common.handler.CustomExceptionHandler"/>-->
     <!--<aop:config>-->

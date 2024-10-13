@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fund.www.provider.dao.GuPiaoImportResultDao">
+    <resultMap id="BaseResultMap" type="com.fund.www.provider.bean.po.GuPiaoImportResult">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="ploy_type" jdbcType="INTEGER" property="ployType" />
+        <result column="ploy_name" jdbcType="VARCHAR" property="ployName" />
+        <result column="import_status" jdbcType="TINYINT" property="importStatus" />
+        <result column="signal_date" jdbcType="DATE" property="signalDate" />
+        <result column="is_use" jdbcType="TINYINT" property="isUse" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, ploy_type, ploy_name, import_status, signal_date, is_use, create_time, update_time
+    </sql>
+
+    <!-- 插入导入结果 -->
+    <insert id="insertImportResult" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO gupiao_import_result (ploy_type, ploy_name, signal_date) VALUE
+        (#{result.ployType, jdbcType=INTEGER}, #{result.ployName, jdbcType=VARCHAR}, #{result.signalDate, jdbcType=DATE})
+    </insert>
+
+    <!-- 根据信号和导入类型查询导入结果 -->
+    <select id="queryBySignalAndType" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM gupiao_import_result
+        WHERE is_use=1 AND signal_date=#{signalDate, jdbcType=DATE} AND ploy_type=#{ployType, jdbcType=INTEGER}
+    </select>
+
+    <!-- 根据信号型查询导入结果 -->
+    <select id="queryBySignalDate" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM gupiao_import_result
+        WHERE is_use=1 AND signal_date=#{signalDate, jdbcType=DATE}
+    </select>
+</mapper>

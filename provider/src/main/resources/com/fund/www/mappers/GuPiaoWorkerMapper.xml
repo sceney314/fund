@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fund.www.provider.dao.GuPiaoWorkerDao">
+    <resultMap id="BaseResultMap" type="com.fund.www.provider.bean.po.GuPiaoWorker">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="worker_type" jdbcType="INTEGER" property="workerType" />
+        <result column="worker_status" jdbcType="TINYINT" property="workerStatus" />
+        <result column="signal_date" jdbcType="DATE" property="signalDate" />
+        <result column="is_use" jdbcType="TINYINT" property="isUse" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, worker_type, worker_status, signal_date, is_use, create_time, update_time
+    </sql>
+
+    <!-- 批量插入worker -->
+    <insert id="batchInsertWorker" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO gupiao_worker (worker_type, signal_date) values
+        <foreach collection="workerList" item="worker" separator=",">
+            (#{worker.workerType, jdbcType=INTEGER}, #{worker.signalDate, jdbcType=DATE})
+        </foreach>
+    </insert>
+
+    <!-- 根据信号日期查询初始化worker -->
+    <select id="queryInitWorkerBySignal" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM gupiao_worker
+        WHERE is_use=1 AND signal_date=#{signalDate, jdbcType=DATE}
+    </select>
+
+    <!-- 根据信号日期查询初始化worker -->
+    <select id="queryInitWorker" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM gupiao_worker
+        WHERE is_use=1 AND worker_status=0
+    </select>
+
+    <!-- 根据ID锁定worker -->
+    <update id="lockWorkerById" parameterType="java.lang.Long">
+        UPDATE gupiao_worker SET worker_status=1
+        WHERE is_use=1 AND worker_status=0 AND id=#{id, jdbcType=BIGINT}
+    </update>
+
+    <!-- 根据ID结束 worker 并更新成功 -->
+    <update id="finishWorkerSuccess" parameterType="java.lang.Long">
+        UPDATE gupiao_worker SET worker_status=2
+        WHERE is_use=1 AND worker_status=1 AND id=#{id, jdbcType=BIGINT}
+    </update>
+
+    <!-- 根据ID结束 worker 并更新失败 -->
+    <update id="finishWorkerFail" parameterType="java.lang.Long">
+        UPDATE gupiao_worker SET worker_status=3
+        WHERE is_use=1 AND worker_status=1 AND id=#{id, jdbcType=BIGINT}
+    </update>
+</mapper>

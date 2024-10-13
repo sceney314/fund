@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fund.www.provider.dao.GuPiaoAnalyzeResultDao">
+    <resultMap id="BaseResultMap" type="com.fund.www.provider.bean.po.GuPiaoAnalyzeResult">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="signal_date" jdbcType="DATE" property="signalDate" />
+        <result column="analyze_type" jdbcType="INTEGER" property="analyzeType" />
+        <result column="gupiao_code" jdbcType="VARCHAR" property="piaoCode" />
+        <result column="gupiao_name" jdbcType="VARCHAR" property="piaoName" />
+        <result column="ploy_name" jdbcType="VARCHAR" property="ployName" />
+        <result column="commission_price" jdbcType="VARCHAR" property="commissionPrice" />
+        <result column="target_price" jdbcType="VARCHAR" property="targetPrice" />
+        <result column="tendency" jdbcType="VARCHAR" property="tendency" />
+        <result column="is_use" jdbcType="TINYINT" property="isUse" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, signal_date, analyze_type, gupiao_code, `gupiao_name`, ploy_name, commission_price, target_price,
+        tendency, is_use, create_time, update_time
+    </sql>
+
+    <!-- 批量插入分析结果 -->
+    <insert id="batchInsertReuslt" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO gupiao_analyze_result (signal_date, analyze_type, gupiao_code, `gupiao_name`, ploy_name, commission_price, target_price,
+                                           tendency) VALUES
+        <foreach collection="resultList" item="result" separator=",">
+            (#{result.signalDate, jdbcType=DATE}, #{result.analyzeType, jdbcType=INTEGER},
+             #{result.piaoCode, jdbcType=VARCHAR}, #{result.piaoName, jdbcType=VARCHAR},
+             #{result.ployName, jdbcType=VARCHAR}, #{result.commissionPrice, jdbcType=VARCHAR},
+             #{result.targetPrice, jdbcType=VARCHAR}, #{result.tendency, jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
+
+</mapper>

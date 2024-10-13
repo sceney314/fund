@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fund.www.provider.dao.GuPiaoDao">
+    <resultMap id="BaseResultMap" type="com.fund.www.provider.bean.po.GuPiao">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="gupiao_code" jdbcType="VARCHAR" property="piaoCode" />
+        <result column="gupiao_name" jdbcType="VARCHAR" property="piaoName" />
+        <result column="signal_date" jdbcType="DATE" property="signalDate" />
+        <result column="ploy_type" jdbcType="INTEGER" property="ployType" />
+        <result column="ploy_name" jdbcType="VARCHAR" property="ployName" />
+        <result column="commission_price" jdbcType="VARCHAR" property="commissionPrice" />
+        <result column="target_price" jdbcType="VARCHAR" property="targetPrice" />
+        <result column="tendency" jdbcType="VARCHAR" property="tendency" />
+        <result column="is_use" jdbcType="TINYINT" property="isUse" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, gupiao_code, `gupiao_name`, signal_date, ploy_type, ploy_name, commission_price, target_price, tendency,
+        is_use, create_time, update_time
+    </sql>
+
+    <!-- 批量插入 -->
+    <insert id="batchInsertSignal" useGeneratedKeys="true" parameterType="java.util.List">
+        INSERT INTO gupiao (gupiao_code, `gupiao_name`, signal_date, ploy_type, ploy_name, commission_price, target_price, tendency)
+        VALUES
+        <foreach collection="piaoList" item="piao" separator=",">
+            (#{piao.piaoCode, jdbcType=VARCHAR}, #{piao.piaoName, jdbcType=VARCHAR},
+             #{piao.signalDate, jdbcType=DATE}, #{piao.ployType, jdbcType=INTEGER}, #{piao.ployName, jdbcType=VARCHAR},
+             #{piao.commissionPrice, jdbcType=DATE}, #{piao.targetPrice, jdbcType=VARCHAR},
+             #{piao.tendency, jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
+    <!-- 根据信号日期查询 -->
+    <select id="queryBySignalDate" parameterType="com.fund.www.provider.bean.bo.QueryBySignalDateBO" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM gupiao
+        WHERE is_use=1 AND signal_date=#{signalDate, jdbcType=DATE}
+    </select>
+
+    <!-- 根据信号范围日期查询 -->
+    <select id="queryByRangeSignalDate" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM gupiao
+        WHERE is_use=1
+        AND signal_date BETWEEN #{startSignal, jdbcType=DATE} AND #{endSignal, jdbcType=DATE}
+    </select>
+</mapper>
