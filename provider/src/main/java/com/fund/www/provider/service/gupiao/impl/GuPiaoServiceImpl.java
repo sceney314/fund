@@ -1,8 +1,10 @@
 package com.fund.www.provider.service.gupiao.impl;
 
 import com.fund.www.provider.bean.model.ImportModel;
+import com.fund.www.provider.bean.po.GuPiaoAnalyzeResult;
 import com.fund.www.provider.bean.po.GuPiaoImportResult;
 import com.fund.www.provider.common.PloyTypeEnum;
+import com.fund.www.provider.dao.GuPiaoAnalyzeResultDao;
 import com.fund.www.provider.dao.GuPiaoDao;
 import com.fund.www.provider.dao.GuPiaoImportResultDao;
 import com.fund.www.provider.dao.GuPiaoWorkerDao;
@@ -30,6 +32,9 @@ public class GuPiaoServiceImpl implements GuPiaoService {
 
     @Resource
     private GuPiaoWorkerDao guPiaoWorkerDao;
+
+    @Resource
+    private GuPiaoAnalyzeResultDao guPiaoAnalyzeResultDao;
 
     @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
@@ -62,5 +67,19 @@ public class GuPiaoServiceImpl implements GuPiaoService {
                 throw new ServiceException("插入分析 worker 失败");
             }
         }
+    }
+
+    @Override
+    public List<GuPiaoAnalyzeResult> showAnalyze() {
+        GuPiaoImportResult result = guPiaoImportResultDao.queryLastImportSignal();
+        if (Objects.isNull(result)){
+            throw new ServiceException("不存在导入完成任务");
+        }
+        return guPiaoAnalyzeResultDao.queryBySignalDate(result.getSignalDate());
+    }
+
+    @Override
+    public void showAnalyzeWithFile() {
+
     }
 }

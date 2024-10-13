@@ -32,5 +32,9 @@
         </foreach>
     </insert>
 
-
+    <!-- 根据信号日期查询 -->
+    <select id="queryBySignalDate" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM gupiao_analyze_result
+        WHERE is_use=1 AND signal_date=#{signalDate, jdbcType=DATE}
+    </select>
 </mapper>

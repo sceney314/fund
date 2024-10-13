@@ -43,5 +43,6 @@
         SELECT <include refid="Base_Column_List"/> FROM gupiao
         WHERE is_use=1
         AND signal_date BETWEEN #{startSignal, jdbcType=DATE} AND #{endSignal, jdbcType=DATE}
+        AND signal_date <![CDATA[ < ]]> #{createTIme, jdbcType=TIMESTAMP}
     </select>
 </mapper>

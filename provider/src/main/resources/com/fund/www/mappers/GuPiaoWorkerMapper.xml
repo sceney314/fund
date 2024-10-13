@@ -23,7 +23,7 @@
     </insert>
 
     <!-- 根据信号日期查询初始化worker -->
-    <select id="queryInitWorkerBySignal" resultMap="BaseResultMap">
+    <select id="queryBySignalDate" resultMap="BaseResultMap">
         SELECT <include refid="Base_Column_List"/> FROM gupiao_worker
         WHERE is_use=1 AND signal_date=#{signalDate, jdbcType=DATE}
     </select>
@@ -34,10 +34,22 @@
         WHERE is_use=1 AND worker_status=0
     </select>
 
+    <!-- 根据信号日期查询初始化worker -->
+    <select id="queryFailWorker" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM gupiao_worker
+        WHERE is_use=1 AND worker_status=3
+    </select>
+
     <!-- 根据ID锁定worker -->
     <update id="lockWorkerById" parameterType="java.lang.Long">
         UPDATE gupiao_worker SET worker_status=1
         WHERE is_use=1 AND worker_status=0 AND id=#{id, jdbcType=BIGINT}
+    </update>
+
+    <!-- 根据ID锁定worker -->
+    <update id="resetWorkerById" parameterType="java.lang.Long">
+        UPDATE gupiao_worker SET worker_status=0
+        WHERE is_use=1 AND worker_status=3 AND id=#{id, jdbcType=BIGINT}
     </update>
 
     <!-- 根据ID结束 worker 并更新成功 -->

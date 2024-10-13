@@ -7,6 +7,7 @@ import com.fund.www.provider.task.WorkerTriggerService;
 import com.fund.www.provider.task.worker.impl.AnalyzeGuPiaoWorker;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -19,10 +20,18 @@ public class WorkerGuPiaoTriggerService implements WorkerTriggerService {
     private GuPiaoWorkerDao guPiaoWorkerDao;
 
     @Resource
+    private ThreadPoolTaskExecutor threadPoolTaskExecutor;
+
+    @Resource
     private AnalyzeGuPiaoWorker analyzeGuPiaoWorker;
 
     @Override
     public void trigger() {
+        List<GuPiaoWorker> failWorkerList = guPiaoWorkerDao.queryFailWorker();
+        if (CollectionUtils.isNotEmpty(failWorkerList)){
+            threadPoolTaskExecutor.submit(() -> failWorkerList.forEach(worker -> guPiaoWorkerDao.resetWorkerById(worker.getId())));
+        }
+
         List<GuPiaoWorker> workerList = guPiaoWorkerDao.queryInitWorker();
         if (CollectionUtils.isEmpty(workerList)){
             return;

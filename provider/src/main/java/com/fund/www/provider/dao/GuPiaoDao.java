@@ -5,6 +5,7 @@ import com.fund.www.provider.bean.po.GuPiao;
 import org.apache.ibatis.annotations.Param;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface GuPiaoDao {
@@ -32,4 +33,16 @@ public interface GuPiaoDao {
      * @return List
      */
     List<GuPiao> queryByRangeSignalDate(@Param("startSignal") LocalDate start, @Param("endSignal") LocalDate end);
+
+    /**
+     * 根据信号范围日期查询
+     *
+     * @param createTIme 插入时间
+     * @param start 信号开始日期
+     * @param end 信号结束日期
+     * @return List
+     */
+    List<GuPiao> queryByRangeSignalDate(@Param("createTIme") LocalDateTime createTIme,
+                                        @Param("startSignal") LocalDate start,
+                                        @Param("endSignal") LocalDate end);
 }

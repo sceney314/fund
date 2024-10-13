@@ -31,4 +31,20 @@ public interface GuPiaoImportResultDao {
      * @return List
      */
     List<GuPiaoImportResult> queryBySignalDate(@Param("signalDate") LocalDate signal);
+
+    /**
+     * 查询最后一个导入完成的
+     *
+     * @return GuPiaoImportResult
+     */
+    GuPiaoImportResult queryLastImportSignal();
+
+    /**
+     * 将状态更新成已分析
+     *
+     * @param signalDate 信号日期
+     * @return int
+     */
+    int updateAnalyzeStatusBySignalDate(@Param("signalDate") LocalDate signalDate);
+
 }

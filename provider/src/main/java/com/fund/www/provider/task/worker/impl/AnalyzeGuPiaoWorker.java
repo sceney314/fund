@@ -3,18 +3,24 @@ package com.fund.www.provider.task.worker.impl;
 import com.fund.www.provider.bean.po.GuPiao;
 import com.fund.www.provider.bean.po.GuPiaoAnalyzeResult;
 import com.fund.www.provider.bean.po.GuPiaoWorker;
+import com.fund.www.provider.common.WorkerStatusEnum;
 import com.fund.www.provider.common.WorkerTypeEnum;
 import com.fund.www.provider.dao.GuPiaoAnalyzeResultDao;
 import com.fund.www.provider.dao.GuPiaoDao;
+import com.fund.www.provider.dao.GuPiaoImportResultDao;
 import com.fund.www.provider.dao.GuPiaoWorkerDao;
 import com.fund.www.provider.exceptions.ServiceException;
 import com.fund.www.provider.task.worker.WorkerService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,9 +34,13 @@ public class AnalyzeGuPiaoWorker implements WorkerService {
     private GuPiaoWorkerDao guPiaoWorkerDao;
 
     @Resource
+    private GuPiaoImportResultDao guPiaoImportResultDao;
+
+    @Resource
     private GuPiaoAnalyzeResultDao guPiaoAnalyzeResultDao;
 
     @Override
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void processWorker(GuPiaoWorker worker) {
         try {
             // 锁定 worker
@@ -43,6 +53,11 @@ public class AnalyzeGuPiaoWorker implements WorkerService {
 
             // 更新 worker
             guPiaoWorkerDao.finishWorkerSuccess(worker.getId());
+
+            List<GuPiaoWorker> workerList = guPiaoWorkerDao.queryBySignalDate(worker.getSignalDate());
+            if (CollectionUtils.isNotEmpty(workerList) && workerList.stream().allMatch(w -> Objects.equals(WorkerStatusEnum.SUCCESS.getCode(), w.getWorkerStatus()))){
+                guPiaoImportResultDao.updateAnalyzeStatusBySignalDate(worker.getSignalDate());
+            }
         }catch (Exception e){
             guPiaoWorkerDao.finishWorkerFail(worker.getId());
             log.error("worker 执行异常[" + worker + "]", e);
@@ -59,12 +74,14 @@ public class AnalyzeGuPiaoWorker implements WorkerService {
         if (Objects.isNull(workerType)){
             return;
         }
-        LocalDate startDate = worker.getSignalDate();
-        LocalDate endDate = worker.getSignalDate().minusDays(workerType.getCode()).plusDays(1);
-        List<GuPiao> piaoList = guPiaoDao.queryByRangeSignalDate(startDate, endDate);
+        LocalDate startDate = worker.getSignalDate().minusDays(workerType.getCode()).plusDays(1);
+        LocalDate endDate = worker.getSignalDate();
+
+        List<GuPiao> piaoList = guPiaoDao.queryByRangeSignalDate(LocalDateTime.of(endDate, LocalTime.MAX), startDate, endDate);
         if (CollectionUtils.isEmpty(piaoList)){
             return;
         }
+
         Map<String, List<GuPiao>> piaoMap = piaoList.stream().collect(Collectors.groupingBy(GuPiao::getPiaoCode));
         List<GuPiaoAnalyzeResult> resultList = piaoMap.values().stream()
                 .filter(item -> Objects.equals(WorkerTypeEnum.TYPE_ONE, workerType) || item.size() > 1)
