@@ -139,8 +139,14 @@ public class GuPiaoController {
         sb.append("\n").append(tableHead).append("\n");
         for (AnalyzeResponse.Piao piao : response.getList()) {
             sb.append("|").append("\t" + piao.getCode() + "\t").append("|")
-                    .append("\t" + piao.getPiaoName() + "\t").append("|")
-                    .append("\t" + piao.getAnalyzeType().getMsg() + "\t").append("|");
+                    .append("\t" + piao.getPiaoName() + "\t").append("|");
+            if (Objects.equals(AnalyzeResultTypeEnum.ANALYZE_ONE, piao.getAnalyzeType())){
+                sb.append("\t\t" + piao.getAnalyzeType().getMsg() + "\t\t").append("|");
+            }else if (AnalyzeResultTypeEnum.ANALYZE_TEN.getCode().compareTo(piao.getAnalyzeType().getCode()) > 0){
+                sb.append("\t" + piao.getAnalyzeType().getMsg() + "\t\t").append("|");
+            }else{
+                sb.append("\t" + piao.getAnalyzeType().getMsg() + "\t").append("|");
+            }
             for (int i = 0 ; i < piao.getDetailList().size(); i++){
                 AnalyzeResponse.AnalyzeDetail detail = piao.getDetailList().get(i);
                 if (i == 0){
