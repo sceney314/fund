@@ -58,6 +58,11 @@ public class AnalyzeResponse implements Serializable {
     @ToString
     public static class AnalyzeDetail implements Serializable{
         /**
+         * 导入日期
+         */
+        private String importDate;
+
+        /**
          * 策略名字
          */
         private String ployName;

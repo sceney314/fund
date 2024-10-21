@@ -52,6 +52,7 @@ public class GuPiaoController {
     @RequestMapping(value = "/triggerSignal", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> triggerSignal(TriggerSignalRequest request){
+        System.out.println(request.toString());
         request.validate();
 
         String file = "/Users/lovelife/Documents/data-master/bin/" + request.getFileName();
@@ -130,30 +131,30 @@ public class GuPiaoController {
         if (CollectionUtils.isEmpty(resultList)){
             return "";
         }
-        String[] tabArr = new String[]{"信号日期", "证券代码", "证券名称", "分析方式", "策略名称", "短线趋势", "委托价格", "目标价格"};
+        String[] tabArr = new String[]{"证券代码", "证券名称", "分析方式", "策略名称", "信号日期", "短线趋势", "委托价格", "目标价格"};
         String tab = "+" + StringUtils.rightPad("-", 13, "-") + "+";
-        String tableHead = tab + tab + tab + tab + tab + tab + tab + tab;
+        String tableHead = "+-----------+-----------+-----------------------+---------------+-----------+---------------+-----------+-----------+";
         AnalyzeResponse response = formatAnalyzeResponse(resultList);
         StringBuilder sb = new StringBuilder();
         sb.append(tableHead).append("\n");
-        sb.append("|");
-        Arrays.stream(tabArr).forEach(item -> sb.append("\t" + item  + "\t").append("|"));
+        sb.append("|\t证券代码\t|\t证券名称\t|\t\t分析方式\t\t\t|\t策略名称\t\t|\t信号日期\t|\t短线趋势\t\t|\t委托价格\t|\t目标价格\t|");
         sb.append("\n").append(tableHead).append("\n");
         for (AnalyzeResponse.Piao piao : response.getList()) {
-            sb.append("|").append("\t" + piao.getSignalDate().toString() + "\t").append("|")
-                    .append("\t" + piao.getCode() + "\t").append("|")
+            sb.append("|").append("\t" + piao.getCode() + "\t").append("|")
                     .append("\t" + piao.getPiaoName() + "\t").append("|")
                     .append("\t" + piao.getAnalyzeType().getMsg() + "\t").append("|");
             for (int i = 0 ; i < piao.getDetailList().size(); i++){
                 AnalyzeResponse.AnalyzeDetail detail = piao.getDetailList().get(i);
                 if (i == 0){
+                    sb.append("\t" + detail.getImportDate() + "\t").append("|");
                     sb.append("\t" + detail.getPloyName() + "\t").append("|");
                     sb.append("\t" + detail.getTendency() + "\t").append("|");
                     sb.append("\t" + detail.getCommissionPrice() + "\t").append("|");
                     sb.append("\t" + detail.getTargetPrice() + "\t").append("|");
                     sb.append("\n");
                 }else{
-                    sb.append("|").append("\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t").append("|");
+                    sb.append("|").append("\t\t\t\t\t\t\t\t\t\t\t\t").append("|");
+                    sb.append("\t" + detail.getImportDate() + "\t").append("|");
                     sb.append("\t" + detail.getPloyName() + "\t").append("|");
                     sb.append("\t" + detail.getTendency() + "\t").append("|");
                     sb.append("\t" + detail.getCommissionPrice() + "\t").append("|");
@@ -191,6 +192,7 @@ public class GuPiaoController {
             piao.setSignalDate(itemList.get(0).getSignalDate());
             piao.setDetailList(itemList.stream().map(item -> {
                 AnalyzeResponse.AnalyzeDetail detail = new AnalyzeResponse.AnalyzeDetail();
+                detail.setImportDate(item.getImportDate().toString());
                 detail.setPloyName(item.getPloyName());
                 detail.setTendency(item.getTendency());
                 detail.setCommissionPrice(item.getCommissionPrice());
@@ -201,7 +203,12 @@ public class GuPiaoController {
             response.getList().add(piao);
         }));
 
-        response.getList().sort((o1, o2) -> Integer.compare(o2.getDetailList().size(), o1.getDetailList().size()));
+        response.getList().sort((o1, o2) -> {
+            int type = o2.getAnalyzeType().getCode().compareTo(o1.getAnalyzeType().getCode());
+            return type != 0 ? type : Integer.compare(o2.getDetailList().size(), o1.getDetailList().size());
+        });
+
+        response.getList().forEach(piao -> piao.getDetailList().sort((o1, o2) -> LocalDate.parse(o2.getImportDate()).compareTo(LocalDate.parse(o1.getImportDate()))));
         return response;
     }
 }

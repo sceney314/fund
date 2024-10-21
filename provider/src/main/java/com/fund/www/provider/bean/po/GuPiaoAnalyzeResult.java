@@ -16,6 +16,11 @@ public class GuPiaoAnalyzeResult extends Base {
     private LocalDate signalDate;
 
     /**
+     * 导入日期
+     */
+    private LocalDate importDate;
+
+    /**
      * 分析结果类型
      */
     private Integer analyzeType;

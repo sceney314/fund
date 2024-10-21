@@ -91,6 +91,7 @@ public class AnalyzeGuPiaoWorker implements WorkerService {
                     result.setAnalyzeType(workerType.getCode());
                     result.setSignalDate(worker.getSignalDate());
                     result.setPiaoCode(piao.getPiaoCode());
+                    result.setImportDate(piao.getSignalDate());
                     result.setPiaoName(piao.getPiaoName());
                     result.setCommissionPrice(piao.getCommissionPrice());
                     result.setTargetPrice(piao.getTargetPrice());
