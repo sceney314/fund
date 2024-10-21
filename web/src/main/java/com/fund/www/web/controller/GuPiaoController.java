@@ -131,8 +131,6 @@ public class GuPiaoController {
         if (CollectionUtils.isEmpty(resultList)){
             return "";
         }
-        String[] tabArr = new String[]{"证券代码", "证券名称", "分析方式", "策略名称", "信号日期", "短线趋势", "委托价格", "目标价格"};
-        String tab = "+" + StringUtils.rightPad("-", 13, "-") + "+";
         String tableHead = "+-----------+-----------+-----------------------+---------------+-----------+---------------+-----------+-----------+";
         AnalyzeResponse response = formatAnalyzeResponse(resultList);
         StringBuilder sb = new StringBuilder();
