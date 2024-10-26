@@ -14,7 +14,6 @@ import com.fund.www.provider.exceptions.ServiceException;
 import com.fund.www.provider.service.gupiao.GuPiaoService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;

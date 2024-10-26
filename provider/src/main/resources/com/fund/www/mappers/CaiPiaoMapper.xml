@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fund.www.provider.dao.CaiPiaoDao">
+    <resultMap id="BaseResultMap" type="com.fund.www.provider.bean.po.CaiPiao">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="caipiao_name" jdbcType="VARCHAR" property="caiPiaoName" />
+        <result column="caipiao_type" jdbcType="TINYINT" property="caiPiaoType" />
+        <result column="caipiao_code" jdbcType="VARCHAR" property="caiPiaoCode" />
+        <result column="open_date" jdbcType="VARCHAR" property="openDate" />
+        <result column="blue" jdbcType="TINYINT" property="blue" />
+        <result column="red_one" jdbcType="TINYINT" property="redOne" />
+        <result column="red_two" jdbcType="TINYINT" property="redTwo" />
+        <result column="red_three" jdbcType="TINYINT" property="redThree" />
+        <result column="red_four" jdbcType="TINYINT" property="redFour" />
+        <result column="red_five" jdbcType="TINYINT" property="redFive" />
+        <result column="red_six" jdbcType="TINYINT" property="redSix" />
+        <result column="is_use" jdbcType="TINYINT" property="isUse" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, caipiao_name, caipiao_type, caipiao_code, open_date, blue, red_one, red_two, red_three, red_four, red_five,
+        red_six, is_use, create_time, update_time
+    </sql>
+
+    <!-- 批量插入彩票 -->
+    <insert id="batchInsertCaiPiao" useGeneratedKeys="true" keyProperty="id" parameterType="java.util.List">
+        INSERT INTO `caipiao` (caipiao_name, caipiao_type, caipiao_code, open_date, blue, red_one, red_two, red_three, red_four, red_five, red_six)
+        VALUES
+        <foreach collection="caiPiaoList" item="caiPiao" separator=",">
+            (#{caiPiao.caiPiaoName, jdbcType=VARCHAR}, #{caiPiao.caiPiaoType, jdbcType=TINYINT},
+            #{caiPiao.caiPiaoCode, jdbcType=VARCHAR}, #{caiPiao.openDate, jdbcType=VARCHAR},
+            #{caiPiao.blue, jdbcType=TINYINT}, #{caiPiao.redOne, jdbcType=TINYINT},
+            #{caiPiao.redTwo, jdbcType=TINYINT}, #{caiPiao.redThree, jdbcType=TINYINT},
+            #{caiPiao.redFour, jdbcType=TINYINT}, #{caiPiao.redFive, jdbcType=TINYINT},
+            #{caiPiao.redSix, jdbcType=TINYINT})
+        </foreach>
+    </insert>
+
+    <!-- 获取彩票数据 -->
+    <select id="getByCaiPiaoCode" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM caipiao
+        WHERE is_use=1 AND caipiao_type=#{type, jdbcType=TINYINT}
+        AND caipiao_code IN
+        <foreach collection="codeList" item="code" open="(" separator="," close=")">
+            #{code, jdbcType=VARCHAR}
+        </foreach>
+    </select>
+</mapper>

@@ -4,6 +4,7 @@ import com.fund.www.api.base.BaseResult;
 import com.fund.www.api.base.Result;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -13,9 +14,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 public class MonitorController {
 
-    @RequestMapping(value = "/check")
+    @RequestMapping(value = "/check", method = RequestMethod.GET)
     @ResponseBody
-    public Result check(){
+    public Result<?> check(){
         return BaseResult.success();
     }
 
