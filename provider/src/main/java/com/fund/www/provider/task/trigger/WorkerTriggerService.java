@@ -1,4 +1,4 @@
-package com.fund.www.provider.task;
+package com.fund.www.provider.task.trigger;
 
 /**
  * worker 统一接口

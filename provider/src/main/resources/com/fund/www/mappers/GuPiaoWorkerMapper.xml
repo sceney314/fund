@@ -22,6 +22,12 @@
         </foreach>
     </insert>
 
+    <!-- 插入worker -->
+    <insert id="insertWorker" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO gupiao_worker (worker_type, signal_date) values
+        (#{worker.workerType, jdbcType=INTEGER}, #{worker.signalDate, jdbcType=DATE})
+    </insert>
+
     <!-- 根据信号日期查询初始化worker -->
     <select id="queryBySignalDate" resultMap="BaseResultMap">
         SELECT <include refid="Base_Column_List"/> FROM gupiao_worker
@@ -32,6 +38,15 @@
     <select id="queryInitWorker" resultMap="BaseResultMap">
         SELECT <include refid="Base_Column_List"/> FROM gupiao_worker
         WHERE is_use=1 AND worker_status=0
+    </select>
+
+    <!-- 根据 worker 类型获取 worker -->
+    <select id="queryByWorkerType" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM gupiao_worker
+        WHERE is_use=1 AND worker_type=#{workerType, jdbcType=INTEGER}
+        AND signal_date=#{signalDate, jdbcType=DATE}
+        ORDER BY id DESC
+        LIMIT 1
     </select>
 
     <!-- 根据信号日期查询初始化worker -->

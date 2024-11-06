@@ -1,4 +1,4 @@
-package com.fund.www.provider.task.trigger;
+package com.fund.www.provider.task;
 
 public interface AsynTriggerTaskService {
 

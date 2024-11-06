@@ -26,6 +26,7 @@ public class TxlConst {
     public static final String NAME_SERVER = PropertyUtils.getString("rocketmq.nameServer");
 
     public static final String DATE_PATTERN_YYYYMMDD = "yyyyMMdd";
+    public static final String DATE_PATTERN_YYYY_MM_DD = "yyyy_MM_dd";
     public static final String DATE_PATTERN_YYYYMMDDHHMMSS = "yyyyMMddHHmmss";
     public static final String DATE_PATTERN_YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
 

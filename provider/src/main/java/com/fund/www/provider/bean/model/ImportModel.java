@@ -72,7 +72,7 @@ public class ImportModel implements Serializable {
      * @return List
      */
     public List<GuPiaoWorker> buildAnalyzeWorkerList(){
-        return WorkerTypeEnum.getAnalyzeALLInstance().stream()
+        return WorkerTypeEnum.getAnalyzeAllInstance().stream()
                 .map(type -> {
                     GuPiaoWorker worker = new GuPiaoWorker();
                     worker.setWorkerType(type.getCode());

@@ -31,4 +31,6 @@ public class CaiPiaoController {
         caiPiaoService.triggerShuangSeQiu();
         return BaseResult.success();
     }
+
+
 }

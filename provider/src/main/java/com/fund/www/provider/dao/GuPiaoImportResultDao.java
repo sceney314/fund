@@ -33,6 +33,14 @@ public interface GuPiaoImportResultDao {
     List<GuPiaoImportResult> queryBySignalDate(@Param("signalDate") LocalDate signal);
 
     /**
+     * 倒序查询信号日期列表
+     *
+     * @param size 查询数量
+     * @return List
+     */
+    List<LocalDate> querySignalDateList(@Param("size") Integer size);
+
+    /**
      * 查询最后一个导入完成的
      *
      * @return GuPiaoImportResult

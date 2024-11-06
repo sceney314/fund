@@ -45,4 +45,20 @@ public interface GuPiaoDao {
     List<GuPiao> queryByRangeSignalDate(@Param("createTIme") LocalDateTime createTIme,
                                         @Param("startSignal") LocalDate start,
                                         @Param("endSignal") LocalDate end);
+
+    /**
+     * 根据信号日期删除数据
+     *
+     * @param endDate 信号结束日期
+     * @return int
+     */
+    int deleteBySignalDate(@Param("endDate") LocalDate endDate);
+
+    /**
+     * 根据信号日期设置不可用数据
+     *
+     * @param endDate 信号结束日期
+     * @return int
+     */
+    int clearByBySignalDate(@Param("endDate") LocalDate endDate);
 }

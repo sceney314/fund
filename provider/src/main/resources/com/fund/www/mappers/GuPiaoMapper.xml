@@ -45,4 +45,18 @@
         AND signal_date BETWEEN #{startSignal, jdbcType=DATE} AND #{endSignal, jdbcType=DATE}
         AND signal_date <![CDATA[ < ]]> #{createTIme, jdbcType=TIMESTAMP}
     </select>
+
+    <!-- 根据信号日期删除数据 -->
+    <update id="deleteBySignalDate" >
+        DELETE FROM gupiao
+        WHERE is_use=2
+        AND signal_date <![CDATA[ < ]]> #{endDate, jdbcType=DATE}
+    </update>
+
+    <!-- 根据信号日期设置不可用数据 -->
+    <update id="clearByBySignalDate" parameterType="java.time.LocalDate">
+        UPDATE gupiao SET is_use=2
+        WHERE is_use=1
+        AND signal_date <![CDATA[ < ]]> #{endDate, jdbcType=DATE}
+    </update>
 </mapper>

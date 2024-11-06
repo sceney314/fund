@@ -21,6 +21,8 @@ public enum WorkerTypeEnum {
     TYPE_THIRTEEN(13, "最近 13 天汇总分析"),
     TYPE_FOURTEEN(14, "最近 14 天汇总分析"),
     TYPE_FIFTEEN(15, "最近 15 天汇总分析"),
+    TYPE_GU_PIAO_CLEAR(16, "股票数据清理"),
+    TYPE_GU_PIAO_DELETE(17, "股票数据清理"),
     ;
     private final Integer code;
     private final String msg;
@@ -68,8 +70,18 @@ public enum WorkerTypeEnum {
         return MAP_ANALYZE.getOrDefault(code, null);
     }
 
-    public static List<WorkerTypeEnum> getAnalyzeALLInstance(){
+    public static List<WorkerTypeEnum> getAnalyzeAllInstance(){
         return Collections.unmodifiableList(new ArrayList<>(MAP_ANALYZE.values()));
+    }
+
+    /**
+     * 是不是分析 worker
+     *
+     * @param type 类型
+     * @return boolean
+     */
+    public static boolean isAnalyzeWorker(Integer type){
+        return Objects.nonNull(type) && MAP_ANALYZE.containsKey(type);
     }
 
 }

@@ -9,7 +9,6 @@ import com.fund.www.provider.dao.GuPiaoAnalyzeResultDao;
 import com.fund.www.provider.dao.GuPiaoDao;
 import com.fund.www.provider.dao.GuPiaoImportResultDao;
 import com.fund.www.provider.dao.GuPiaoWorkerDao;
-import com.fund.www.provider.exceptions.ServiceException;
 import com.fund.www.provider.task.worker.WorkerService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -40,14 +39,14 @@ public class AnalyzeGuPiaoWorker implements WorkerService {
     private GuPiaoAnalyzeResultDao guPiaoAnalyzeResultDao;
 
     @Override
+    public Set<WorkerTypeEnum> workerType() {
+        return new HashSet<>(WorkerTypeEnum.getAnalyzeAllInstance());
+    }
+
+    @Override
     @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
     public void processWorker(GuPiaoWorker worker) {
         try {
-            // 锁定 worker
-            if (guPiaoWorkerDao.lockWorkerById(worker.getId()) < 1){
-                throw new ServiceException("锁定 worker 失败，Worker:" + worker.getId());
-            }
-
             // 分析
             analyzeGuPiao(worker);
 
@@ -59,7 +58,6 @@ public class AnalyzeGuPiaoWorker implements WorkerService {
                 guPiaoImportResultDao.updateAnalyzeStatusBySignalDate(worker.getSignalDate());
             }
         }catch (Exception e){
-            guPiaoWorkerDao.finishWorkerFail(worker.getId());
             log.error("worker 执行异常[" + worker + "]", e);
         }
     }

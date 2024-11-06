@@ -16,11 +16,28 @@ public interface GuPiaoWorkerDao {
     int batchInsertWorker(@Param("workerList")List<GuPiaoWorker> workerList);
 
     /**
+     * 插入worker
+     *
+     * @param worker worker 对象
+     * @return int
+     */
+    int insertWorker(@Param("worker")GuPiaoWorker worker);
+
+    /**
      * 查询初始化 worker
      *
      * @return List
      */
     List<GuPiaoWorker> queryInitWorker();
+
+    /**
+     * 根据 worker 类型获取 worker
+     *
+     * @param workerType worker 类型
+     * @param signalDate 信号日期
+     * @return GuPiaoWorker
+     */
+    GuPiaoWorker queryByWorkerType(@Param("workerType") Integer workerType, @Param("signalDate") LocalDate signalDate);
 
     /**
      * 查询初始化 worker

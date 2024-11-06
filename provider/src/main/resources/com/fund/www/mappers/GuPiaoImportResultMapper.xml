@@ -33,6 +33,14 @@
         WHERE is_use=1 AND signal_date=#{signalDate, jdbcType=DATE}
     </select>
 
+    <!-- 倒序查询信号日期列表 -->
+    <select id="querySignalDateList" resultType="java.time.LocalDate">
+        SELECT DISTINCT signal_date FROM gupiao_import_result
+        WHERE is_use=1 AND import_status=2
+        ORDER BY signal_date DESC
+        LIMIT #{size, jdbcType=INTEGER}
+    </select>
+
     <!-- 查询最后一个导入完成的 -->
     <select id="queryLastImportSignal" resultMap="BaseResultMap">
         SELECT <include refid="Base_Column_List"/> FROM gupiao_import_result
