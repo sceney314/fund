@@ -3,7 +3,7 @@
 <mapper namespace="com.fund.www.provider.dao.FundTypeDao">
     <resultMap id="BaseResultMap" type="com.fund.www.provider.bean.po.FundType">
         <id column="id" jdbcType="INTEGER" property="id" />
-        <result column="fund_id" jdbcType="VARCHAR" property="fundId" />
+        <result column="parent_code" jdbcType="VARCHAR" property="parentCode" />
         <result column="sina_type_code" jdbcType="VARCHAR" property="sinaTypeCode" />
         <result column="type_name" jdbcType="VARCHAR" property="typeName" />
         <result column="is_use" jdbcType="TINYINT" property="isUse" />
@@ -11,16 +11,30 @@
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        id, fund_id, sina_type_code, type_name, is_use, create_time, update_time
+        id, parent_code, sina_type_code, type_name, is_use, create_time, update_time
     </sql>
 
     <!-- 添加基金类型 -->
     <insert id="addFundType" parameterType="com.fund.www.provider.bean.po.FundType" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO `fund_type` (fund_id, sina_type_code, type_name, create_time)
-        VALUES (#{fundId, jdbcType=VARCHAR}, #{sinaTypeCode, jdbcType=VARCHAR}, #{typeName, jdbcType=VARCHAR}, #{createTime, jdbcType=TIMESTAMP})
+        INSERT INTO `fund_type` (parent_code, sina_type_code, type_name)
+        VALUES (#{parentCode, jdbcType=VARCHAR}, #{sinaTypeCode, jdbcType=VARCHAR}, #{typeName, jdbcType=VARCHAR})
+    </insert>
+
+    <!-- 批量插入基金类型 -->
+    <insert id="batchInsertFundType" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `fund_type` (parent_code, sina_type_code, type_name)
+        VALUES
+        <foreach collection="typeList" item="type" separator=",">
+            (#{type.parentCode, jdbcType=VARCHAR}, #{type.sinaTypeCode, jdbcType=VARCHAR}, #{type.typeName, jdbcType=VARCHAR})
+        </foreach>
     </insert>
 
     <select id="getById" resultMap="BaseResultMap">
         SELECT <include refid="Base_Column_List"/> FROM `fund_type` WHERE id=#{id, jdbcType=INTEGER} AND is_use=1;
     </select>
+
+    <!-- 清除 -->
+    <update id="clearFundTypeData">
+        DELETE FROM fund_type;
+    </update>
 </mapper>

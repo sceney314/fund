@@ -1,36 +1,44 @@
 package com.fund.www.provider.bean.po;
 
-import com.fund.www.provider.utils.IdgentTestUtil;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 @Setter
 @Getter
 @ToString
-public class FundType {
-    private Integer id;
+public class FundType extends Base{
 
-    private String fundId;
+    /**
+     * 父机构 ID
+     */
+    private String parentCode = "";
 
+    /**
+     * 基金类型编码
+     */
     private String sinaTypeCode;
 
+    /**
+     * 基金类型名字
+     */
     private String typeName;
 
-    private Integer isUse;
-
-    private LocalDateTime createTime;
-
-    private LocalDateTime updateTime;
-
-    public static FundType makeType(String code, String name){
+    public static FundType getInstance(String code, String parentCode, String name){
         FundType type = new FundType();
-        type.setFundId(IdgentTestUtil.nextId() + "");
+        type.setParentCode(parentCode);
         type.setSinaTypeCode(code);
         type.setTypeName(name);
-        type.setCreateTime(LocalDateTime.now());
         return type;
+    }
+
+    public static <K> Predicate<K> distinctPredicate(Function<? super K, Object> function){
+        ConcurrentHashMap<Object, Boolean> map = new ConcurrentHashMap<>();
+        return t -> null == map.putIfAbsent(function.apply(t), true);
     }
 }

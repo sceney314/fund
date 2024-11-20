@@ -1,22 +1,24 @@
 package com.fund.www.provider.utils;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
+import com.fund.www.provider.bean.dto.FundTypeItemDTO;
+import com.fund.www.provider.bean.dto.SinaFundResultDTO;
 import com.fund.www.provider.exceptions.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.BasicCookieStore;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
+import java.util.Map;
 
 
 /**
@@ -25,8 +27,10 @@ import java.io.IOException;
  * Date: 2020/9/2 下午7:17
  * Copyright (C), 2015-2020
  */
+@Slf4j
 public class HttpUtil {
-    private static final Logger log = LogManager.getLogger(HttpUtil.class);
+
+    private static final int SUCCESS = 200;
 
     /**
      * 简单请求
@@ -58,5 +62,26 @@ public class HttpUtil {
 //            log.error("URL[" + url + "] GET 请求异常", e);
             throw new ServiceException("GET 请求异常!");
         }
+    }
+
+    public static String getRequest(String url){
+        try {
+            HttpClient httpClient = HttpClientBuilder.create().build();
+            HttpGet get = new HttpGet(url);
+            HttpResponse response = httpClient.execute(get);
+            if(SUCCESS != response.getStatusLine().getStatusCode()){
+                throw new ServiceException(response.getStatusLine().toString());
+            }
+            System.out.println("请求状态:" + response.getStatusLine().getStatusCode());
+            return EntityUtils.toString(response.getEntity());
+        }catch (ParseException | IOException e){
+            throw new ServiceException("GET 请求异常!");
+        }
+    }
+
+    public static void main(String[] args) {
+        String url = "https://stock.finance.sina.com.cn/fundfilter/api/openapi.php/MoneyFinanceFundFilterService.getFundTypeList";
+        SinaFundResultDTO result = JSON.parseObject(getRequest(url), SinaFundResultDTO.class);
+        System.out.println(result.getDataMap(new TypeReference<Map<String, FundTypeItemDTO>>(){}));
     }
 }

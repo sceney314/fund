@@ -2,25 +2,26 @@ package com.fund.www.web.controller;
 
 import com.fund.www.api.base.BaseResult;
 import com.fund.www.api.base.Result;
-import com.fund.www.api.bo.AddFundTypeBo;
-import com.fund.www.provider.service.business.FundTypeService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.fund.www.provider.service.fund.FundTypeService;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.annotation.Resource;
+
 @Controller
 @RequestMapping("/fundType")
 public class FundTypeController {
+    @Resource
+    private FundTypeService fundTypeService;
 
-    @Autowired
-    private FundTypeService service;
-
-    @RequestMapping(value = "/addFundType", method = RequestMethod.POST)
+    @RequestMapping(value = "/initFundType", method = RequestMethod.POST)
     @ResponseBody
-    public Result<?> addFundType(AddFundTypeBo bo){
-        service.addFundType(bo.getCode(), bo.getName());
+    public Result<?> initFundType(){
+        fundTypeService.initFundType();
         return BaseResult.success();
     }
+
+
 }
