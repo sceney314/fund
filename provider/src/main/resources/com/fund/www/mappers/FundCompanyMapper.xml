@@ -1,32 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.fund.www.provider.dao.FundDao">
-    <resultMap id="BaseResultMap" type="com.fund.www.provider.bean.po.Fund">
+<mapper namespace="com.fund.www.provider.dao.FundCompanyDao">
+    <resultMap id="BaseResultMap" type="com.fund.www.provider.bean.po.FundCompany">
         <id column="id" jdbcType="INTEGER" property="id" />
-        <result column="fund_id" jdbcType="VARCHAR" property="fundId" />
-        <result column="fund_code" jdbcType="VARCHAR" property="fundCode" />
-        <result column="fund_type_id" jdbcType="VARCHAR" property="fundTypeId" />
-        <result column="fund_name" jdbcType="VARCHAR" property="fundName" />
-        <result column="fund_size" jdbcType="BIGINT" property="fundSize" />
-        <result column="net_value" jdbcType="INTEGER" property="netValue" />
-        <result column="one_month" jdbcType="INTEGER" property="oneMonth" />
-        <result column="three_month" jdbcType="INTEGER" property="threeMonth" />
-        <result column="six_month" jdbcType="INTEGER" property="sixMonth" />
-        <result column="one_year" jdbcType="INTEGER" property="oneYear" />
-        <result column="three_year" jdbcType="INTEGER" property="threeYear" />
-        <result column="to_this_day" jdbcType="INTEGER" property="toThisDay" />
-        <result column="risk_level" jdbcType="VARCHAR" property="riskLevel" />
-        <result column="min_value" jdbcType="INTEGER" property="minValue" />
-        <result column="can_buy" jdbcType="TINYINT" property="canBuy" />
+        <result column="company_code" jdbcType="VARCHAR" property="companyCode" />
+        <result column="short_name" jdbcType="VARCHAR" property="shortName" />
+        <result column="company_name" jdbcType="VARCHAR" property="companyName" />
         <result column="is_use" jdbcType="TINYINT" property="isUse" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-        <result column="manager" jdbcType="LONGVARCHAR" property="manager" />
     </resultMap>
+
     <sql id="Base_Column_List">
-        id, fund_id, fund_code, fund_type_id, fund_name, fund_size, net_value, one_month,
-        three_month, six_month, one_year, three_year, to_this_day, risk_level, min_value,
-        can_buy, is_use, create_time, update_time, manager
+        id, company_code, short_name, company_name, is_use, create_time, update_time
     </sql>
+
+    <!-- 批量插入基金公司 -->
+    <insert id="batchInsertCompany" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO fund_company (company_code, short_name, company_name) VALUES
+        <foreach collection="companyList" item="company" separator=",">
+            (#{company.companyCode, jdbcType=VARCHAR}, #{company.shortName, jdbcType=VARCHAR}, #{company.companyName, jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
+    <!-- 根据编码获取公司列表 -->
+    <select id="getByCodeList" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM fund_company
+        WHERE is_use=1 AND company_code IN
+        <foreach collection="codeList" item="code" open="(" separator="," close=")">
+            #{code, jdbcType=VARCHAR}
+        </foreach>
+    </select>
 
 </mapper>

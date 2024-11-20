@@ -2,17 +2,17 @@ package com.fund.www.provider.repository.external.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.fund.www.provider.bean.dto.FundCompanyDTO;
 import com.fund.www.provider.bean.dto.FundTypeDTO;
 import com.fund.www.provider.bean.dto.FundTypeItemDTO;
 import com.fund.www.provider.bean.dto.SinaFundResultDTO;
 import com.fund.www.provider.repository.external.SinaFundRepository;
 import com.fund.www.provider.utils.HttpUtil;
+import com.fund.www.provider.utils.MapUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 public class SinaFundRepositoryImpl implements SinaFundRepository {
@@ -20,6 +20,11 @@ public class SinaFundRepositoryImpl implements SinaFundRepository {
      * 基金类型地址
      */
     private static final String URL_FUND_TYPE = "https://stock.finance.sina.com.cn/fundfilter/api/openapi.php/MoneyFinanceFundFilterService.getFundTypeList";
+
+    /**
+     * 基金公司
+     */
+    private static final String URL_FUND_COMPANY = "https://stock.finance.sina.com.cn/fundfilter/api/openapi.php/MoneyFinanceFundFilterService.getCompanyList";
 
     @Override
     public List<FundTypeDTO> getFundTypeList() {
@@ -42,5 +47,18 @@ public class SinaFundRepositoryImpl implements SinaFundRepository {
             }
         });
         return typeList;
+    }
+
+    @Override
+    public List<FundCompanyDTO> getFundCompanyList() {
+        SinaFundResultDTO result = JSON.parseObject(HttpUtil.getRequest(URL_FUND_COMPANY), SinaFundResultDTO.class);
+        Map<String, List<FundCompanyDTO>> companyMap = result.getDataMap(new TypeReference<Map<String, List<FundCompanyDTO>>>(){});
+        if (MapUtils.isEmpty(companyMap)){
+            return null;
+        }
+        return companyMap.values()
+                .stream()
+                .flatMap(Collection::stream)
+                .collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(FundCompanyDTO::getCode))), ArrayList<FundCompanyDTO>::new));
     }
 }
