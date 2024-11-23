@@ -7,6 +7,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Setter
 @Getter
@@ -19,6 +20,10 @@ public class SinaFundResultDTO implements Serializable {
 
     public <T> T getDataObject(Class<T> clazz){
         return JSON.parseObject(result.getData(), clazz);
+    }
+
+    public <T> List<T> getDataList(Class<T> clazz){
+        return JSON.parseArray(result.getData(), clazz);
     }
 
     public <T> T getDataMap(TypeReference<T> reference){

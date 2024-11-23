@@ -2,10 +2,7 @@ package com.fund.www.provider.repository.external.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.fund.www.provider.bean.dto.FundCompanyDTO;
-import com.fund.www.provider.bean.dto.FundTypeDTO;
-import com.fund.www.provider.bean.dto.FundTypeItemDTO;
-import com.fund.www.provider.bean.dto.SinaFundResultDTO;
+import com.fund.www.provider.bean.dto.*;
 import com.fund.www.provider.repository.external.SinaFundRepository;
 import com.fund.www.provider.utils.HttpUtil;
 import com.fund.www.provider.utils.MapUtils;
@@ -25,6 +22,11 @@ public class SinaFundRepositoryImpl implements SinaFundRepository {
      * 基金公司
      */
     private static final String URL_FUND_COMPANY = "https://stock.finance.sina.com.cn/fundfilter/api/openapi.php/MoneyFinanceFundFilterService.getCompanyList";
+
+    /**
+     * 基金主题
+     */
+    private static final String URL_FUND_SUBJECT = "https://stock.finance.sina.com.cn/fundfilter/api/openapi.php/MoneyFinanceFundFilterService.getSubjectList";
 
     @Override
     public List<FundTypeDTO> getFundTypeList() {
@@ -60,5 +62,11 @@ public class SinaFundRepositoryImpl implements SinaFundRepository {
                 .stream()
                 .flatMap(Collection::stream)
                 .collect(Collectors.collectingAndThen(Collectors.toCollection(() -> new TreeSet<>(Comparator.comparing(FundCompanyDTO::getCode))), ArrayList<FundCompanyDTO>::new));
+    }
+
+    @Override
+    public List<FundSubjectDTO> getFundSubjectList() {
+        SinaFundResultDTO result = JSON.parseObject(HttpUtil.getRequest(URL_FUND_SUBJECT), SinaFundResultDTO.class);
+        return result.getDataList(FundSubjectDTO.class);
     }
 }

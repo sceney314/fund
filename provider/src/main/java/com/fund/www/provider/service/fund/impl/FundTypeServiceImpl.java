@@ -37,6 +37,9 @@ public class FundTypeServiceImpl implements FundTypeService {
                 .map(dto -> FundType.getInstance(dto.getTypeCode(), StringUtils.defaultIfBlank(dto.getParentCode(), ""), dto.getName()))
                 .filter(FundType.distinctPredicate(FundType::getSinaTypeCode))
                 .collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(typeList)){
+            return;
+        }
         fundTypeDao.batchInsertFundType(typeList);
     }
 

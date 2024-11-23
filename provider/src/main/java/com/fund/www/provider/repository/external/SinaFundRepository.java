@@ -1,6 +1,7 @@
 package com.fund.www.provider.repository.external;
 
 import com.fund.www.provider.bean.dto.FundCompanyDTO;
+import com.fund.www.provider.bean.dto.FundSubjectDTO;
 import com.fund.www.provider.bean.dto.FundTypeDTO;
 
 import java.util.List;
@@ -19,4 +20,11 @@ public interface SinaFundRepository {
      * @return List
      */
     List<FundCompanyDTO> getFundCompanyList();
+
+    /**
+     * 获取基金主题
+     *
+     * @return List
+     */
+    List<FundSubjectDTO> getFundSubjectList();
 }
