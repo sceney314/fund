@@ -31,4 +31,11 @@ public interface FundTypeDao {
      * @return int
      */
     int clearFundTypeData();
+
+    /**
+     * 获取全部类型
+     *
+     * @return List
+     */
+    List<FundType> getAllType();
 }

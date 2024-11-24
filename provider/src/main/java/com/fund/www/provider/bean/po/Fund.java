@@ -9,44 +9,99 @@ import java.time.LocalDateTime;
 @Setter
 @Getter
 @ToString
-public class Fund {
-    private Integer id;
-
-    private String fundId;
-
+public class Fund extends Base{
+    /**
+     * 基金编码
+     */
     private String fundCode;
 
-    private String fundTypeId;
-
+    /**
+     * 基金名字
+     */
     private String fundName;
 
-    private Long fundSize;
+    /**
+     * 1 级分类
+     */
+    private String typeCodeOne;
 
-    private Integer netValue;
+    /**
+     * 2 级分类
+     */
+    private String typeCodeTwo;
 
-    private Integer oneMonth;
+    /**
+     * 3 级分类
+     */
+    private String typeCodeThree;
 
-    private Integer threeMonth;
+    /**
+     * 基金主题
+     */
+    private String subjectCode;
 
-    private Integer sixMonth;
+    /**
+     * 基金名字
+     */
+    private String subjectName;
 
-    private Integer oneYear;
+    /**
+     * 公司编码
+     */
+    private String companyCode;
 
-    private Integer threeYear;
+    /**
+     * 公司名字
+     */
+    private String companyName;
 
-    private Integer toThisDay;
+    /**
+     * 基金规模
+     */
+    private String fundSize;
 
-    private String riskLevel;
+    /**
+     * 基金净值
+     */
+    private String netValue;
 
-    private Integer minValue;
+    /**
+     * 累计净值
+     */
+    private String totalNetValue;
 
-    private Integer canBuy;
+    /**
+     * 最近 1 月涨幅
+     */
+    private String oneMonth;
 
-    private Integer isUse;
+    /**
+     * 最近 3 月涨幅
+     */
+    private String threeMonth;
 
-    private LocalDateTime createTime;
+    /**
+     * 最近 6 月涨幅
+     */
+    private String sixMonth;
 
-    private LocalDateTime updateTime;
+    /**
+     * 最近 1 年涨幅
+     */
+    private String oneYear;
 
-    private String manager;
+    /**
+     * 最近 3 年涨幅
+     */
+    private String threeYear;
+
+    /**
+     * 最近 5 年涨幅
+     */
+    private String fiveYear;
+
+    /**
+     * 成立至今
+     */
+    private String toThisDay;
 }

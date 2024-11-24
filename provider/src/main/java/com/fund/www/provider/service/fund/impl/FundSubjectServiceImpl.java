@@ -41,4 +41,9 @@ public class FundSubjectServiceImpl implements FundSubjectService {
 
         fundSubjectDao.batchInsertSubject(insertList);
     }
+
+    @Override
+    public List<FundSubject> getAllSubject() {
+        return fundSubjectDao.getAllSubject();
+    }
 }

@@ -43,5 +43,8 @@ public class FundTypeServiceImpl implements FundTypeService {
         fundTypeDao.batchInsertFundType(typeList);
     }
 
-
+    @Override
+    public List<FundType> getAllType() {
+        return fundTypeDao.getAllType();
+    }
 }

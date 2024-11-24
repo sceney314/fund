@@ -37,4 +37,9 @@
     <update id="clearFundTypeData">
         DELETE FROM fund_type;
     </update>
+
+    <!-- 获取全部类型 -->
+    <select id="getAllType" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM `fund_type` WHERE is_use=1;
+    </select>
 </mapper>

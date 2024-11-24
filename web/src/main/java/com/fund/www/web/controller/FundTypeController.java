@@ -3,6 +3,7 @@ package com.fund.www.web.controller;
 import com.fund.www.api.base.BaseResult;
 import com.fund.www.api.base.Result;
 import com.fund.www.provider.service.fund.FundCompanyService;
+import com.fund.www.provider.service.fund.FundService;
 import com.fund.www.provider.service.fund.FundSubjectService;
 import com.fund.www.provider.service.fund.FundTypeService;
 import org.springframework.stereotype.Controller;
@@ -24,6 +25,9 @@ public class FundTypeController {
     @Resource
     private FundSubjectService fundSubjectService;
 
+    @Resource
+    private FundService fundService;
+
     @RequestMapping(value = "/initFundType", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> initFundType(){
@@ -42,6 +46,13 @@ public class FundTypeController {
     @ResponseBody
     public Result<?> initFundSubject(){
         fundSubjectService.initSubject();
+        return BaseResult.success();
+    }
+
+    @RequestMapping(value = "/initFund", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> initFund(){
+        fundService.initFund();
         return BaseResult.success();
     }
 

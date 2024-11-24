@@ -31,4 +31,10 @@
         </foreach>
     </select>
 
+    <!-- 获取全部主题 -->
+    <select id="getAllSubject" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM fund_subject
+        WHERE is_use=1
+    </select>
+
 </mapper>

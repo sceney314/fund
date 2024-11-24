@@ -21,4 +21,12 @@ public interface FundCompanyDao {
      * @return List
      */
     List<FundCompany> getByCodeList(@Param("codeList") List<String> codeList);
+
+    /**
+     * 按页获取公司列表
+     *
+     * @param startId 开始 ID
+     * @return List
+     */
+    List<FundCompany> getCompanyWithPage(@Param("startId") Long startId);
 }

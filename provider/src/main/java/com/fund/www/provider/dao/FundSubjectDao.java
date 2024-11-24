@@ -21,4 +21,11 @@ public interface FundSubjectDao {
      * @return List
      */
     List<FundSubject> getByCodeList(@Param("codeList")List<String> codeList);
+
+    /**
+     * 获取全部主题
+     *
+     * @return List
+     */
+    List<FundSubject> getAllSubject();
 }

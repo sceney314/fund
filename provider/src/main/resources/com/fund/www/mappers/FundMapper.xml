@@ -3,30 +3,69 @@
 <mapper namespace="com.fund.www.provider.dao.FundDao">
     <resultMap id="BaseResultMap" type="com.fund.www.provider.bean.po.Fund">
         <id column="id" jdbcType="INTEGER" property="id" />
-        <result column="fund_id" jdbcType="VARCHAR" property="fundId" />
         <result column="fund_code" jdbcType="VARCHAR" property="fundCode" />
-        <result column="fund_type_id" jdbcType="VARCHAR" property="fundTypeId" />
         <result column="fund_name" jdbcType="VARCHAR" property="fundName" />
-        <result column="fund_size" jdbcType="BIGINT" property="fundSize" />
-        <result column="net_value" jdbcType="INTEGER" property="netValue" />
-        <result column="one_month" jdbcType="INTEGER" property="oneMonth" />
-        <result column="three_month" jdbcType="INTEGER" property="threeMonth" />
-        <result column="six_month" jdbcType="INTEGER" property="sixMonth" />
-        <result column="one_year" jdbcType="INTEGER" property="oneYear" />
-        <result column="three_year" jdbcType="INTEGER" property="threeYear" />
-        <result column="to_this_day" jdbcType="INTEGER" property="toThisDay" />
-        <result column="risk_level" jdbcType="VARCHAR" property="riskLevel" />
-        <result column="min_value" jdbcType="INTEGER" property="minValue" />
-        <result column="can_buy" jdbcType="TINYINT" property="canBuy" />
+        <result column="type_code_one" jdbcType="VARCHAR" property="typeCodeOne" />
+        <result column="type_code_two" jdbcType="VARCHAR" property="typeCodeTwo" />
+        <result column="type_code_three" jdbcType="VARCHAR" property="typeCodeThree" />
+        <result column="subject_code" jdbcType="VARCHAR" property="subjectCode" />
+        <result column="subject_name" jdbcType="VARCHAR" property="subjectName" />
+        <result column="company_code" jdbcType="VARCHAR" property="companyCode" />
+        <result column="company_name" jdbcType="VARCHAR" property="companyName" />
+        <result column="fund_size" jdbcType="VARCHAR" property="fundSize" />
+        <result column="net_value" jdbcType="VARCHAR" property="netValue" />
+        <result column="total_net_value" jdbcType="VARCHAR" property="totalNetValue" />
+        <result column="one_month" jdbcType="VARCHAR" property="oneMonth" />
+        <result column="three_month" jdbcType="VARCHAR" property="threeMonth" />
+        <result column="six_month" jdbcType="VARCHAR" property="sixMonth" />
+        <result column="one_year" jdbcType="VARCHAR" property="oneYear" />
+        <result column="three_year" jdbcType="VARCHAR" property="threeYear" />
+        <result column="five_year" jdbcType="VARCHAR" property="fiveYear" />
+        <result column="to_this_day" jdbcType="VARCHAR" property="toThisDay" />
         <result column="is_use" jdbcType="TINYINT" property="isUse" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
-        <result column="manager" jdbcType="LONGVARCHAR" property="manager" />
     </resultMap>
     <sql id="Base_Column_List">
-        id, fund_id, fund_code, fund_type_id, fund_name, fund_size, net_value, one_month,
-        three_month, six_month, one_year, three_year, to_this_day, risk_level, min_value,
-        can_buy, is_use, create_time, update_time, manager
+        id, fund_code, fund_name, type_code_one, type_code_two, type_code_three, subject_code,
+        subject_name, company_code, company_name, fund_size, net_value, total_net_value,
+        one_month, three_month, six_month, one_year, three_year, five_year, to_this_day,
+        is_use, create_time, update_time
     </sql>
 
+    <!-- 批量插入基金 -->
+    <insert id="insertFundList" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO fund (fund_code, fund_name, type_code_one, type_code_two, type_code_three, subject_code,
+                          subject_name, company_code, company_name, fund_size, net_value, total_net_value,
+                          one_month, three_month, six_month, one_year, three_year, five_year, to_this_day) VALUES
+        <foreach collection="fundList" item="fund" separator=",">
+            (#{fund.fundCode, jdbcType=VARCHAR}, #{fund.fundName, jdbcType=VARCHAR}, #{fund.typeCodeOne, jdbcType=VARCHAR},
+             #{fund.typeCodeTwo, jdbcType=VARCHAR}, #{fund.typeCodeThree, jdbcType=VARCHAR}, #{fund.subjectCode, jdbcType=VARCHAR},
+             #{fund.subjectName, jdbcType=VARCHAR}, #{fund.companyCode, jdbcType=VARCHAR}, #{fund.companyName, jdbcType=VARCHAR},
+             #{fund.fundSize, jdbcType=VARCHAR}, #{fund.netValue, jdbcType=VARCHAR}, #{fund.totalNetValue, jdbcType=VARCHAR},
+             #{fund.oneMonth, jdbcType=VARCHAR}, #{fund.threeMonth, jdbcType=VARCHAR}, #{fund.sixMonth, jdbcType=VARCHAR},
+             #{fund.oneYear, jdbcType=VARCHAR}, #{fund.threeYear, jdbcType=VARCHAR}, #{fund.fiveYear, jdbcType=VARCHAR},
+             #{fund.toThisDay, jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
+    <!-- 根据基金编码获取基金列表 -->
+    <select id="getByCodeList" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM `fund`
+        WHERE is_use=1
+        AND fund_code IN
+        <foreach collection="codeList" item="code" open="(" separator="," close=")">
+            #{code, jdbcType=VARCHAR}
+        </foreach>
+    </select>
+
+    <!-- 获取已存在的基金编码列表 -->
+    <select id="getExistCodeList" resultType="java.lang.String">
+        SELECT fund_code FROM `fund`
+        WHERE is_use=1
+        AND fund_code IN
+        <foreach collection="codeList" item="code" open="(" separator="," close=")">
+            #{code, jdbcType=VARCHAR}
+        </foreach>
+    </select>
 </mapper>
