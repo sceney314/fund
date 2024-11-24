@@ -68,6 +68,9 @@ public class HttpUtil {
         try {
             HttpClient httpClient = HttpClientBuilder.create().build();
             HttpGet get = new HttpGet(url);
+            get.setHeader("Content-Type", "text/plain; charset=UTF-8");
+            get.setHeader("Accept", "text/plain; charset=UTF-8");
+
             HttpResponse response = httpClient.execute(get);
             if(SUCCESS != response.getStatusLine().getStatusCode()){
                 throw new ServiceException(response.getStatusLine().toString());

@@ -56,5 +56,12 @@ public class FundTypeController {
         return BaseResult.success();
     }
 
+    @RequestMapping(value = "/getFundInfo", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> getFundInfo(){
+        fundService.getFundInfo();
+        return BaseResult.success();
+    }
+
 
 }

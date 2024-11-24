@@ -68,4 +68,13 @@
             #{code, jdbcType=VARCHAR}
         </foreach>
     </select>
+
+    <!-- 使用瀑布流方式，批量获取基金 -->
+    <select id="queryFundFlow" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM `fund`
+        WHERE is_use=1
+        AND id <![CDATA[ > ]]> #{startId, jdbcType=BIGINT}
+        ORDER BY id ASC
+        LIMIT #{pageSize, jdbcType=INTEGER}
+    </select>
 </mapper>

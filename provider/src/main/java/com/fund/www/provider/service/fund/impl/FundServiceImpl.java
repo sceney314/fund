@@ -2,11 +2,11 @@ package com.fund.www.provider.service.fund.impl;
 
 import com.fund.www.provider.bean.bo.FundQueryParam;
 import com.fund.www.provider.bean.dto.FundDTO;
-import com.fund.www.provider.bean.po.Fund;
-import com.fund.www.provider.bean.po.FundCompany;
-import com.fund.www.provider.bean.po.FundSubject;
-import com.fund.www.provider.bean.po.FundType;
+import com.fund.www.provider.bean.dto.StockDTO;
+import com.fund.www.provider.bean.po.*;
 import com.fund.www.provider.dao.FundDao;
+import com.fund.www.provider.dao.StockDao;
+import com.fund.www.provider.exceptions.ServiceException;
 import com.fund.www.provider.repository.external.SinaFundRepository;
 import com.fund.www.provider.service.fund.FundCompanyService;
 import com.fund.www.provider.service.fund.FundService;
@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
@@ -43,6 +44,9 @@ public class FundServiceImpl implements FundService {
 
     @Resource
     private FundDao fundDao;
+
+    @Resource
+    private StockDao stockDao;
 
     @Override
     public void initFund() {
@@ -110,4 +114,58 @@ public class FundServiceImpl implements FundService {
         }));
     }
 
+    @Override
+    public void getFundInfo() {
+        Long startId = 0L;
+        Integer pageSize = 50;
+        while (true){
+            List<Fund> fundList = fundDao.queryFundFlow(startId, pageSize);
+            if (CollectionUtils.isEmpty(fundList)){
+                break;
+            }
+            asyncProcessStock(fundList);
+            startId = fundList.stream().map(Fund::getId).max(Long::compareTo).orElseThrow(() -> new ServiceException("获取最大 ID 异常"));
+        }
+    }
+
+    /**
+     * 异步处理基金股票
+     *
+     * @param fundList 基金列表
+     */
+    private void asyncProcessStock(List<Fund> fundList){
+        threadPoolTaskExecutor.submit(() -> {
+            for (Fund fund : fundList){
+                List<StockDTO> dtoList = sinaFundRepository.queryFundStock(fund.getFundCode());
+                if (CollectionUtils.isEmpty(dtoList)){
+                    continue;
+                }
+
+                List<Stock> stockList = stockDao.queryByCodeList(dtoList.stream().map(StockDTO::getStockCode).collect(Collectors.toList()), fund.getFundCode());
+                Map<String, Stock> stockMap = CollectionUtils.isEmpty(stockList) ? new HashMap<>() : stockList.stream().collect(Collectors.toMap(Stock::getStockCode, Function.identity(), (v1, v2) -> v1));
+                List<Stock> dataList = dtoList.stream()
+                        .map(dto -> {
+                            Stock stock = new Stock();
+                            stock.setFundCode(fund.getFundCode());
+                            stock.setStockCode(dto.getStockCode());
+                            stock.setStockName(dto.getStockName());
+                            stock.setFundPercent(dto.getPercent());
+                            stock.setChangePercent(dto.getChangePercent());
+                            stock.setHoldNum(dto.getStockNum());
+                            stock.setHoldChangeNum(dto.getNumChange());
+                            return stock;
+                        })
+                        .collect(Collectors.toList());
+                List<Stock> insertList = dataList.stream().filter(d -> !stockMap.containsKey(d.getStockCode())).collect(Collectors.toList());
+                List<Stock> updateList = dataList.stream().filter(d -> stockMap.containsKey(d.getStockCode())).collect(Collectors.toList());
+                if (CollectionUtils.isNotEmpty(insertList)){
+                    stockDao.insertStockList(insertList);
+                }
+
+                if (CollectionUtils.isNotEmpty(updateList)){
+                    updateList.forEach(stock -> stockDao.updateFundStock(stock));
+                }
+            }
+        });
+    }
 }

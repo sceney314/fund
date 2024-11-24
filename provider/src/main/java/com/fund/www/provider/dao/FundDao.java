@@ -30,4 +30,13 @@ public interface FundDao {
      */
     List<String> getExistCodeList(@Param("codeList")List<String> codeList);
 
+    /**
+     * 使用瀑布流方式，批量获取基金
+     *
+     * @param startId 开始 ID
+     * @param pageSize 每页大小
+     * @return List
+     */
+    List<Fund> queryFundFlow(@Param("startId") Long startId, @Param("pageSize") Integer pageSize);
+
 }

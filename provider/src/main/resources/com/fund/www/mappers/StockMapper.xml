@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fund.www.provider.dao.StockDao">
+    <resultMap id="BaseResultMap" type="com.fund.www.provider.bean.po.Stock">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="fund_code" jdbcType="VARCHAR" property="fundCode" />
+        <result column="stock_code" jdbcType="VARCHAR" property="stockCode" />
+        <result column="stock_name" jdbcType="VARCHAR" property="stockName" />
+        <result column="fund_percent" jdbcType="VARCHAR" property="fundPercent" />
+        <result column="change_percent" jdbcType="VARCHAR" property="changePercent" />
+        <result column="hold_num" jdbcType="VARCHAR" property="holdNum" />
+        <result column="hold_change_num" jdbcType="VARCHAR" property="holdChangeNum" />
+        <result column="is_use" jdbcType="TINYINT" property="isUse" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, fund_code, stock_code, stock_name, `fund_percent`, change_percent, hold_num, hold_change_num, is_use,
+        create_time, update_time
+    </sql>
+
+    <!-- 批量插入基金持有股票 -->
+    <insert id="insertStockList" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO `stock` (fund_code, stock_code, stock_name, `fund_percent`, change_percent, hold_num, hold_change_num) VALUES
+        <foreach collection="stockList" item="stock" separator=",">
+            (#{stock.fundCode, jdbcType=VARCHAR}, #{stock.stockCode, jdbcType=VARCHAR},
+             #{stock.stockName, jdbcType=VARCHAR}, #{stock.fundPercent, jdbcType=VARCHAR},
+             #{stock.changePercent, jdbcType=VARCHAR}, #{stock.holdNum, jdbcType=VARCHAR},
+             #{stock.holdChangeNum, jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
+    <!-- 根据代码股票查询信息 -->
+    <select id="queryByCodeList" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM `stock`
+        WHERE is_use=1 AND stock_code IN
+        <foreach collection="codeList" item="code" open="(" separator="," close=")">
+            #{code, jdbcType=VARCHAR}
+        </foreach>
+        AND fund_code=#{fundCode, jdbcType=VARCHAR}
+    </select>
+
+  <!-- 更新股票信息 -->
+    <update id="updateFundStock">
+        UPDATE `stock` SET
+        `fund_percent`=#{fundPercent, jdbcType=VARCHAR},
+        change_percent=#{changePercent, jdbcType=VARCHAR},
+        hold_num=#{holdNum, jdbcType=VARCHAR},
+        hold_change_num=#{holdChangeNum, jdbcType=VARCHAR}
+        WHERE is_use=1
+        AND stock_code=#{stockCode, jdbcType=VARCHAR}
+        AND fund_code=#{fundCode, jdbcType=VARCHAR}
+    </update>
+</mapper>

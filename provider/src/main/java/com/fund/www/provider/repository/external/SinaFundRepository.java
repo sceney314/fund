@@ -1,10 +1,7 @@
 package com.fund.www.provider.repository.external;
 
 import com.fund.www.provider.bean.bo.FundQueryParam;
-import com.fund.www.provider.bean.dto.FundCompanyDTO;
-import com.fund.www.provider.bean.dto.FundDTO;
-import com.fund.www.provider.bean.dto.FundSubjectDTO;
-import com.fund.www.provider.bean.dto.FundTypeDTO;
+import com.fund.www.provider.bean.dto.*;
 
 import java.util.List;
 
@@ -37,4 +34,12 @@ public interface SinaFundRepository {
      * @return List
      */
     List<FundDTO> getFundList(FundQueryParam param);
+
+    /**
+     * 基金股票重仓信息
+     *
+     * @param fundCode 基金编码
+     * @return List
+     */
+    List<StockDTO> queryFundStock(String fundCode);
 }

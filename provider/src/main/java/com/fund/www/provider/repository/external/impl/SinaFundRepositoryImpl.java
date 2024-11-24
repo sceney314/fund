@@ -4,12 +4,19 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.fund.www.provider.bean.bo.FundQueryParam;
 import com.fund.www.provider.bean.dto.*;
+import com.fund.www.provider.exceptions.ServiceException;
 import com.fund.www.provider.repository.external.SinaFundRepository;
 import com.fund.www.provider.utils.HttpUtil;
 import com.fund.www.provider.utils.MapUtils;
 import org.apache.commons.collections.CollectionUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -34,6 +41,16 @@ public class SinaFundRepositoryImpl implements SinaFundRepository {
      * 查询基金列表
      */
     private static final String URL_FUND = "https://stock.finance.sina.com.cn/fundfilter/api/openapi.php/MoneyFinanceFundFilterService.getFundFilterAll";
+
+    /**
+     * 基金明细
+     */
+    private static final String URL_FUND_DETAIL = "https://finance.sina.com.cn/fund/quotes/{fundCode}/bc.shtml";
+
+    /**
+     * html 股票 ID
+     */
+    private static final String HTML_ID_STOCK = "fund_sdzc_table";
 
     @Override
     public List<FundTypeDTO> getFundTypeList() {
@@ -87,4 +104,79 @@ public class SinaFundRepositoryImpl implements SinaFundRepository {
         }
         return data.getData();
     }
+
+    @Override
+    public List<StockDTO> queryFundStock(String fundCode) {
+        String fundUrl = URL_FUND_DETAIL.replace("{fundCode}", fundCode);
+        Document doc = null;
+        try {
+            doc = Jsoup.parse(new URL(fundUrl), 6000);
+        } catch (IOException e) {
+            throw new ServiceException("根据 URL[" + fundUrl + "]获取信息异常");
+        }
+        Element table = doc.getElementById(HTML_ID_STOCK);
+        if (Objects.isNull(table)){
+            return null;
+        }
+        Element tbody = table.getElementsByTag("tbody").first();
+
+        List<Element> trList = new ArrayList<>();
+        int size = tbody.childrenSize();
+        while (size-- > 0){
+            Element element = tbody.child(size);
+            trList.add(element);
+        }
+
+        if (CollectionUtils.isEmpty(trList)){
+            return null;
+        }
+
+        String reg = "[a-zA-Z]";
+
+        return trList.stream().map(tr -> {
+            StockDTO dto = new StockDTO();
+            int tdSize = tr.childrenSize();
+            for (int i = 0; i < tdSize; i++){
+                Element td = tr.child(i);
+                switch (i){
+                    case 0:
+                        Element a = td.child(0);
+                        dto.setStockName(a.text());
+                        String stockUrl = a.attr("href");
+                        URL url = null;
+                        try {
+                            url = new URL(stockUrl);
+                        } catch (MalformedURLException e) {
+                            throw new ServiceException("解析 URL[" + stockUrl + "]异常");
+                        }
+                        String[] pathArr = url.getPath().split("/");
+                        dto.setStockCode(pathArr[3].replace(reg, ""));
+                        break;
+                    case 1:
+                        dto.setPrice(td.text());
+                        break;
+                    case 2:
+                        dto.setScope(td.text());
+                        break;
+                    case 3:
+                        dto.setPercent(td.text());
+                        break;
+                    case 4:
+                        dto.setChangePercent(td.text());
+                        break;
+                    case 5:
+                        dto.setStockNum(td.text());
+                        break;
+                    case 6:
+                        dto.setNumChange(td.text());
+                        break;
+                    case 7:
+                    default:
+                        break;
+                }
+            }
+            return dto;
+        }).collect(Collectors.toList());
+    }
+
 }
