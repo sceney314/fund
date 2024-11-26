@@ -29,4 +29,13 @@ public interface StockDao {
      * @return int
      */
     int updateFundStock(@Param("stock") Stock stock);
+
+    /**
+     * 瀑布流获取基金重仓股票
+     *
+     * @param startId 开始 ID
+     * @param pageSize 每页数量
+     * @return List
+     */
+    List<Stock> queryStockFlow(@Param("startId") Long startId, @Param("pageSize") Integer pageSize);
 }

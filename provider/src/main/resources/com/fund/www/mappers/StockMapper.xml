@@ -51,4 +51,13 @@
         AND stock_code=#{stockCode, jdbcType=VARCHAR}
         AND fund_code=#{fundCode, jdbcType=VARCHAR}
     </update>
+
+    <!-- 瀑布流获取基金重仓股票 -->
+    <select id="queryStockFlow" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM `stock`
+        WHERE is_use=1
+        AND id <![CDATA[ > ]]> #{startId, jdbcType=BIGINT}
+        ORDER BY id ASC
+        LIMIT #{pageSize, jdbcType=INTEGER}
+    </select>
 </mapper>

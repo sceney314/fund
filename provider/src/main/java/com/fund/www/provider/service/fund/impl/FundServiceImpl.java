@@ -8,20 +8,14 @@ import com.fund.www.provider.dao.FundDao;
 import com.fund.www.provider.dao.StockDao;
 import com.fund.www.provider.exceptions.ServiceException;
 import com.fund.www.provider.repository.external.SinaFundRepository;
-import com.fund.www.provider.service.fund.FundCompanyService;
-import com.fund.www.provider.service.fund.FundService;
-import com.fund.www.provider.service.fund.FundSubjectService;
-import com.fund.www.provider.service.fund.FundTypeService;
+import com.fund.www.provider.service.fund.*;
 import com.fund.www.provider.utils.StringUtils;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -38,6 +32,9 @@ public class FundServiceImpl implements FundService {
 
     @Resource
     private FundTypeService fundTypeService;
+
+    @Resource
+    private FundStockService fundStockService;
 
     @Resource
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
@@ -116,16 +113,31 @@ public class FundServiceImpl implements FundService {
 
     @Override
     public void getFundInfo() {
+        List<Fund> fundList =  queryAllFund();
+        if (CollectionUtils.isEmpty(fundList)){
+            return;
+        }
+        asyncProcessStock(fundList);
+    }
+
+    /**
+     * 查询全部基金
+     *
+     * @return  List
+     */
+    private List<Fund> queryAllFund(){
+        List<Fund> fundList = new ArrayList<>();
         Long startId = 0L;
         Integer pageSize = 50;
         while (true){
-            List<Fund> fundList = fundDao.queryFundFlow(startId, pageSize);
-            if (CollectionUtils.isEmpty(fundList)){
+            List<Fund> list = fundDao.queryFundFlow(startId, pageSize);
+            if (CollectionUtils.isEmpty(list)){
                 break;
             }
-            asyncProcessStock(fundList);
-            startId = fundList.stream().map(Fund::getId).max(Long::compareTo).orElseThrow(() -> new ServiceException("获取最大 ID 异常"));
+            fundList.addAll(list);
+            startId = list.stream().map(Fund::getId).max(Long::compareTo).orElseThrow(() -> new ServiceException("获取最大 ID 异常"));
         }
+        return fundList;
     }
 
     /**
@@ -168,4 +180,49 @@ public class FundServiceImpl implements FundService {
             }
         });
     }
+
+    @Override
+    public String analyzeStockByFund() {
+        List<Fund> fundList =  queryAllFund();
+        Map<String, Fund> fundMap = CollectionUtils.isEmpty(fundList) ? new HashMap<>() : fundList.stream().collect(Collectors.toMap(Fund::getFundCode, Function.identity(), (v1, v2) -> v1));
+        List<Stock> stockList = fundStockService.queryAllStock();
+        if (CollectionUtils.isEmpty(stockList)){
+            return "";
+        }
+
+        Map<String, List<Stock>> stockMap = stockList.stream().collect(Collectors.groupingBy(Stock::getStockCode));
+        List<List<Stock>> list = new ArrayList<>(stockMap.values());
+        list.sort((o1, o2) -> Integer.compare(o2.size(), o1.size()));
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("+---------------+-----------+-----------+-----------+-----------+-----------+-----------+\n");
+        sb.append("|\t证券代码\t\t|\t证券名称\t|\t基金数量\t|\t数量变化\t|\t基金编码\t|\t基金占比\t|\t占比变化\t|\n");
+        sb.append("+---------------+-----------+-----------+-----------+-----------+-----------+-----------+\n");
+
+        for (List<Stock> stockItem : list){
+            for (int i = 0; i < stockItem.size(); i++){
+                Stock stock = stockItem.get(i);
+                if (i == 0){
+                    sb.append("|\t" + stock.getStockCode() + "\t")
+                            .append("|\t" + stock.getStockName()+ "\t")
+                            .append("|\t" + stock.getHoldNum() + "\t")
+                            .append("|\t" + stock.getHoldChangeNum() + "\t")
+                            .append("|\t" + stock.getFundCode() + "\t")
+                            .append("|\t" + stock.getFundPercent() + "\t")
+                            .append("|\t" + stock.getChangePercent() + "\t|\n");
+                }else{
+                    sb.append("|\t\t\t\t\t\t\t")
+                            .append("|\t" + stock.getHoldNum() + "\t")
+                            .append("|\t" + stock.getHoldChangeNum() + "\t")
+                            .append("|\t" + stock.getFundCode() + "\t")
+                            .append("|\t" + stock.getFundPercent() + "\t")
+                            .append("|\t" + stock.getChangePercent() + "\t|\n");
+                }
+            }
+
+        }
+        sb.append("+---------------+-----------+-----------+-----------+-----------+-----------+-----------+\n");
+        return sb.toString();
+    }
+
 }

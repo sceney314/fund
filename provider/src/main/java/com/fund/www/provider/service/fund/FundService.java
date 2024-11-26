@@ -14,4 +14,11 @@ public interface FundService {
      * 初始化基金
      */
     void getFundInfo();
+
+    /**
+     * 获取分析结果
+     *
+     * @return String
+     */
+    String analyzeStockByFund();
 }
