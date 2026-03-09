@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fund.www.provider.dao.BaseGuPiaoDao">
+    <resultMap id="BaseResultMap" type="com.fund.www.provider.bean.po.BaseGuPiao">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="gupiao_code" jdbcType="VARCHAR" property="gupiaoCode" />
+        <result column="gupiao_name" jdbcType="VARCHAR" property="gupiaoName" />
+        <result column="symbol" jdbcType="VARCHAR" property="symbol" />
+        <result column="market" jdbcType="TINYINT" property="market" />
+        <result column="is_use" jdbcType="TINYINT" property="isUse" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, gupiao_code, gupiao_name, symbol, market, is_use, create_time, update_time
+    </sql>
+
+    <!-- 批量插入股票基础信息 -->
+    <insert id="batchInsertBaseGuPiao" useGeneratedKeys="true" keyProperty="id" parameterType="java.util.List">
+        INSERT INTO base_gupiao (gupiao_code, gupiao_name, symbol, market)
+        VALUES
+        <foreach collection="guPiaoList" item="base" separator=",">
+            (#{base.gupiaoCode, jdbcType=VARCHAR}, #{base.gupiaoName, jdbcType=TINYINT},
+            #{base.symbol, jdbcType=VARCHAR}, #{base.market, jdbcType=TINYINT})
+        </foreach>
+    </insert>
+
+    <!-- 根据编码查询股票基础信息  -->
+    <select id="queryByCodeList" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM base_gupiao
+        WHERE gupiao_code IN
+        <foreach collection="codeList" item="code" open="(" separator="," close=")">
+            #{code, jdbcType=VARCHAR}
+        </foreach>
+    </select>
+
+    <!-- 瀑布流查询股票基础信息 -->
+    <select id="queryByPageList" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM base_gupiao
+        WHERE id <![CDATA[ > ]]> #{startId, jdbcType=BIGINT} AND is_use=1
+        ORDER BY id ASC
+        LIMIT 500
+    </select>
+
+    <!-- 瀑布流查询股票基础信息 -->
+    <select id="queryByPageWithSize" resultMap="BaseResultMap">
+        SELECT <include refid="Base_Column_List"/> FROM base_gupiao
+        WHERE id <![CDATA[ > ]]> #{startId, jdbcType=BIGINT} AND is_use=1
+        ORDER BY id ASC
+        LIMIT #{pageSize, jdbcType=INTEGER}
+    </select>
+
+    <!-- 删除股票 -->
+    <delete id="deleteByCodeList">
+        DELETE FROM `base_gupiao`
+        WHERE gupiao_code IN
+        <foreach collection="codeList"  item="code" open="(" separator="," close=")">
+            #{code, jdbcType=VARCHAR}
+        </foreach>
+    </delete>
+
+    <!-- 获取最大 ID -->
+    <select id="getMaxId" resultType="java.lang.Long">
+        SELECT id FROM base_gupiao ORDER BY id DESC LIMIT 1
+    </select>
+</mapper>

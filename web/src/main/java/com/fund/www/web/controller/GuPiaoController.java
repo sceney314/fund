@@ -48,6 +48,12 @@ public class GuPiaoController {
         return BaseResult.success(request);
     }
 
+    /**
+     * 导入分析结果
+     *
+     * @param request 文件明细
+     * @return Result
+     */
     @RequestMapping(value = "/triggerSignal", method = RequestMethod.POST)
     @ResponseBody
     public Result<?> triggerSignal(TriggerSignalRequest request){
@@ -90,6 +96,18 @@ public class GuPiaoController {
         return BaseResult.success();
     }
 
+    /**
+     * 强制分析
+     *
+     * @return Result
+     */
+    @RequestMapping(value = "/forceAnalyze", method = RequestMethod.POST)
+    @ResponseBody
+    public Result<?> forceAnalyze(QueryBySignalDateRequest request){
+        request.validate();
+        guPiaoService.forceAnalyze(LocalDate.parse(request.getSignalDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+        return BaseResult.success();
+    }
 
     @RequestMapping(value = "/showAnalyzeList", method = RequestMethod.POST)
     @ResponseBody

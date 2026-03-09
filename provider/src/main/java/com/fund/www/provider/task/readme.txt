@@ -1,1 +1,2 @@
 worker 列表
+服务启动之后执行 worker 触发器 AsynTriggerTaskService

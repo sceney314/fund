@@ -4,7 +4,6 @@ import com.fund.www.provider.bean.po.GuPiaoWorker;
 import com.fund.www.provider.common.WorkerTypeEnum;
 import com.fund.www.provider.dao.GuPiaoDao;
 import com.fund.www.provider.dao.GuPiaoImportResultDao;
-import com.fund.www.provider.dao.GuPiaoWorkerDao;
 import com.fund.www.provider.task.worker.WorkerService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -34,9 +33,6 @@ public class ClearGuPiaoWorker implements WorkerService {
     @Resource
     private GuPiaoDao guPiaoDao;
 
-    @Resource
-    private GuPiaoWorkerDao guPiaoWorkerDao;
-
     @Override
     public Set<WorkerTypeEnum> workerType() {
         return Collections.singleton(WorkerTypeEnum.TYPE_GU_PIAO_CLEAR);
@@ -44,19 +40,6 @@ public class ClearGuPiaoWorker implements WorkerService {
 
     @Override
     public void processWorker(GuPiaoWorker worker) {
-        // 执行 worker
-        doClearData(worker);
-
-        // 更新 worker
-        guPiaoWorkerDao.finishWorkerSuccess(worker.getId());
-    }
-
-    /**
-     * 清理数据
-     *
-     * @param worker worker 对象
-     */
-    private void doClearData(GuPiaoWorker worker){
         List<LocalDate> signalDateList = guPiaoImportResultDao.querySignalDateList(PRE_SIGNAL_DATE);
         if (CollectionUtils.isEmpty(signalDateList) || signalDateList.size() < PRE_SIGNAL_DATE){
             return;
@@ -68,5 +51,6 @@ public class ClearGuPiaoWorker implements WorkerService {
         }
 
         guPiaoDao.clearByBySignalDate(minDate);
+
     }
 }

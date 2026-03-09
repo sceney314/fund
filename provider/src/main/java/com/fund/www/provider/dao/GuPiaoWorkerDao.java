@@ -85,4 +85,13 @@ public interface GuPiaoWorkerDao {
      * @return int
      */
     int finishWorkerFail(@Param("id") Long id);
+
+    /**
+     * 根据 ID 更新 work remark
+     *
+     * @param id ID
+     * @param remark 标记
+     * @return int
+     */
+    int updateWorkerRemark(@Param("id") Long id, @Param("remark") String remark);
 }

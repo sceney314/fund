@@ -6,26 +6,27 @@
         <result column="worker_type" jdbcType="INTEGER" property="workerType" />
         <result column="worker_status" jdbcType="TINYINT" property="workerStatus" />
         <result column="signal_date" jdbcType="DATE" property="signalDate" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
         <result column="is_use" jdbcType="TINYINT" property="isUse" />
         <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
         <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     </resultMap>
     <sql id="Base_Column_List">
-        id, worker_type, worker_status, signal_date, is_use, create_time, update_time
+        id, worker_type, worker_status, signal_date, is_use, remark, create_time, update_time
     </sql>
 
     <!-- 批量插入worker -->
     <insert id="batchInsertWorker" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO gupiao_worker (worker_type, signal_date) values
+        INSERT INTO gupiao_worker (worker_type, signal_date, remark) values
         <foreach collection="workerList" item="worker" separator=",">
-            (#{worker.workerType, jdbcType=INTEGER}, #{worker.signalDate, jdbcType=DATE})
+            (#{worker.workerType, jdbcType=INTEGER}, #{worker.signalDate, jdbcType=DATE}, #{worker.remark, jdbcType=VARCHAR})
         </foreach>
     </insert>
 
     <!-- 插入worker -->
     <insert id="insertWorker" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO gupiao_worker (worker_type, signal_date) values
-        (#{worker.workerType, jdbcType=INTEGER}, #{worker.signalDate, jdbcType=DATE})
+        INSERT INTO gupiao_worker (worker_type, signal_date, remark) values
+        (#{worker.workerType, jdbcType=INTEGER}, #{worker.signalDate, jdbcType=DATE}, #{worker.remark, jdbcType=VARCHAR})
     </insert>
 
     <!-- 根据信号日期查询初始化worker -->
@@ -77,5 +78,11 @@
     <update id="finishWorkerFail" parameterType="java.lang.Long">
         UPDATE gupiao_worker SET worker_status=3
         WHERE is_use=1 AND worker_status=1 AND id=#{id, jdbcType=BIGINT}
+    </update>
+
+    <!-- 根据 ID 更新 work remark -->
+    <update id="updateWorkerRemark">
+        UPDATE gupiao_worker SET remark=#{remark, jdbcType=VARCHAR}
+        WHERE id=#{id, jdbcType=BIGINT}
     </update>
 </mapper>

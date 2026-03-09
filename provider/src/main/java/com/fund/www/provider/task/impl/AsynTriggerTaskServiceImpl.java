@@ -18,11 +18,12 @@ import java.util.concurrent.TimeUnit;
 public class AsynTriggerTaskServiceImpl implements AsynTriggerTaskService {
     @Autowired
     private WorkerTriggerService[] workerTriggerServices;
+
     @Resource
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 
     @PostConstruct
-    private void afterInit(){
+    private void trigger(){
         ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1, r -> new Thread(new ThreadGroup("FUND-TASK"), r, "FUND-TASK-TRIGGER"));
         executorService.scheduleAtFixedRate(() -> {
             for (WorkerTriggerService triggerService : workerTriggerServices){
@@ -31,6 +32,8 @@ public class AsynTriggerTaskServiceImpl implements AsynTriggerTaskService {
                         triggerService.trigger();
                     }catch (Exception e){
                         log.error("触发 worker 执行异常", e);
+                        e.printStackTrace();
+                        System.out.println(e.getMessage());
                     }
                 });
             }

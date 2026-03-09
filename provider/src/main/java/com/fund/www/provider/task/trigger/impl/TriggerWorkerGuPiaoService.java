@@ -12,16 +12,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+/**
+ * 股票分析&数据清理 trigger
+ */
 @Slf4j
 @Component
-public class WorkerGuPiaoTriggerService implements WorkerTriggerService {
+public class TriggerWorkerGuPiaoService implements WorkerTriggerService {
     @Resource
     private GuPiaoWorkerDao guPiaoWorkerDao;
 
@@ -76,6 +78,8 @@ public class WorkerGuPiaoTriggerService implements WorkerTriggerService {
                     throw new ServiceException("worker 类型[" + worker.getWorkerType() + "]不存在对应的执行逻辑，worker:" + worker.getId());
                 }
                 service.processWorker(worker);
+                // 更新 worker
+                guPiaoWorkerDao.finishWorkerSuccess(worker.getId());
                 System.out.println("worker 类型:[" + worker.getWorkerType() + "], worker:[" + worker.getId() + " - " + worker.getSignalDate() + "]执行结束");
             }catch (Exception e){
                 guPiaoWorkerDao.finishWorkerFail(worker.getId());

@@ -4,6 +4,7 @@ import com.fund.www.provider.bean.model.ImportModel;
 import com.fund.www.provider.bean.po.GuPiao;
 import com.fund.www.provider.bean.po.GuPiaoAnalyzeResult;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface GuPiaoService {
@@ -22,7 +23,8 @@ public interface GuPiaoService {
     List<GuPiaoAnalyzeResult> showAnalyze();
 
     /**
-     * 展示分析结果
+     * 强制分析结果
      */
-    void showAnalyzeWithFile();
+    void forceAnalyze(LocalDate signalDate);
+
 }

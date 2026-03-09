@@ -17,9 +17,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
+/**
+ * 无效数据清理 trigger
+ */
 @Service
 @Slf4j
-public class InitDataTriggerService implements WorkerTriggerService {
+public class TriggerInitDataService implements WorkerTriggerService {
     @Resource
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
 

@@ -23,6 +23,9 @@ public enum WorkerTypeEnum {
     TYPE_FIFTEEN(15, "最近 15 天汇总分析"),
     TYPE_GU_PIAO_CLEAR(16, "股票数据清理"),
     TYPE_GU_PIAO_DELETE(17, "股票数据清理"),
+    TYPE_GU_PIAO_IMPORT(20, "股票导入"),
+    TYPE_OWNER_PLATE_CHECK(21, "股票板块校验"),
+    TYPE_PLATE_CHECK(22, "板块信息"),
     ;
     private final Integer code;
     private final String msg;
@@ -37,15 +40,7 @@ public enum WorkerTypeEnum {
                 TYPE_FOUR,
                 TYPE_FIVE,
                 TYPE_SIX,
-                TYPE_SEVEN,
-                TYPE_EIGHT,
-                TYPE_NINE,
-                TYPE_TEN,
-                TYPE_ELEVEN,
-                TYPE_TWELVE,
-                TYPE_THIRTEEN,
-                TYPE_FOURTEEN,
-                TYPE_FIFTEEN
+                TYPE_SEVEN
         ).collect(Collectors.toMap(WorkerTypeEnum::getCode, Function.identity()));
     }
 

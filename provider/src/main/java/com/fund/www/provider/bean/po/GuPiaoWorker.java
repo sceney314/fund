@@ -24,4 +24,9 @@ public class GuPiaoWorker extends Base {
      * 信号日期
      */
     private LocalDate signalDate;
+
+    /**
+     * 扩展信息
+     */
+    private String remark = "";
 }

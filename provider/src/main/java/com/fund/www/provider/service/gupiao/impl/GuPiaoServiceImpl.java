@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -79,7 +80,17 @@ public class GuPiaoServiceImpl implements GuPiaoService {
     }
 
     @Override
-    public void showAnalyzeWithFile() {
+    @Transactional(rollbackFor = Exception.class, propagation = Propagation.REQUIRED)
+    public void forceAnalyze(LocalDate signalDate) {
+        List<GuPiaoImportResult> importList = guPiaoImportResultDao.queryBySignalDate(signalDate);
+        if (CollectionUtils.isEmpty(importList)){
+            return;
+        }
 
+        ImportModel model = new ImportModel();
+        model.setSignalDate(signalDate);
+        if (guPiaoWorkerDao.batchInsertWorker(model.buildAnalyzeWorkerList()) < 1){
+            throw new ServiceException("插入分析 worker 失败");
+        }
     }
 }

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.fund.www.provider.bean.dto.FundTypeItemDTO;
 import com.fund.www.provider.bean.dto.SinaFundResultDTO;
+import com.fund.www.provider.bean.dto.sina.BasicGuPiaoDTO;
 import com.fund.www.provider.exceptions.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpResponse;
@@ -18,6 +19,7 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 
@@ -83,8 +85,8 @@ public class HttpUtil {
     }
 
     public static void main(String[] args) {
-        String url = "https://stock.finance.sina.com.cn/fundfilter/api/openapi.php/MoneyFinanceFundFilterService.getFundTypeList";
-        SinaFundResultDTO result = JSON.parseObject(getRequest(url), SinaFundResultDTO.class);
-        System.out.println(result.getDataMap(new TypeReference<Map<String, FundTypeItemDTO>>(){}));
+        String url = "https://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/Market_Center.getHQNodeData?page=3&num=5&asc=1&node=sh_a";
+        List<BasicGuPiaoDTO> result = JSON.parseArray(getRequest(url), BasicGuPiaoDTO.class);
+        System.out.println(result);
     }
 }

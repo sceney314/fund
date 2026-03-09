@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.fund.www.provider.dao.PlateInfoDao">
+    <resultMap id="BaseResultMap" type="com.fund.www.provider.bean.po.PlateInfo">
+        <id column="id" jdbcType="BIGINT" property="id" />
+        <result column="plate_code" jdbcType="VARCHAR" property="plateCode" />
+        <result column="plate_name" jdbcType="VARCHAR" property="plateName" />
+        <result column="is_use" jdbcType="TINYINT" property="isUse" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    </resultMap>
+    <sql id="Base_Column_List">
+        id, plate_code, plate_name, is_use, create_time, update_time
+    </sql>
+
+    <!-- 批量插入板块 -->
+    <insert id="batchInsertPlate" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO plate_info (`plate_code`, `plate_name`) VALUES
+        <foreach collection="plateList" item="plate" separator=",">
+            (#{plate.plateCode, jdbcType=VARCHAR}, #{plate.plateName, jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
+    <!-- 查询全量板块 -->
+    <select id="queryAllPlate" resultMap="BaseResultMap">
+        SELECT id, plate_code, plate_name FROM plate_info WHERE is_use=1
+    </select>
+</mapper>
